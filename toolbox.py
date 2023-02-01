@@ -3,14 +3,12 @@ import pdb
 
 class ImageOperation:
     def __init__(self, image_filename):
-        pass
+        self.img = Image.open(image_filename)
+        self.pixels = self.img.load()        
 
     def crop(self):
-        # Import an image from directory:
-        input_image = Image.open("family.jpg")
-        img = input_image
-
-        pixels = img.load()
+        img = self.img
+        pixels = self.pixels
         p = pixels
 
         for i in range(img.size[0]): # for every pixel:
