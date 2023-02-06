@@ -1,23 +1,4 @@
-<html>
-  <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-  </head>
-  <body>
-    <!-- file upload -->
-    <input type="file" id="imageLoader" name="imageLoader"/>
-    <label>Image File:</label><br/>
-    <canvas id="canvas" width="600" height="600"></canvas>
-
-    <!-- video -->
-    <video playsinline autoplay></video>
-    <button>Take snapshot</button>
-
-    <!-- Note the usage of `type=module` here as this is an ES6 module -->
-    <script type="module">
-        import { run, grayscale, changeColour, crazyColour } from "./toolbox.js"
-        run(); // load wasm
-
-        // upload image
+// upload image
 var imageLoader = document.getElementById('imageLoader');
 imageLoader.addEventListener('change', handleImage, false);
 var ctx = canvas.getContext('2d');
@@ -34,11 +15,7 @@ function processFrame() {
     //extra
     let image = new Image();
     image.src = canvas.toDataURL();
-    ctx.drawImage(image, 0, 0);
-    let imageData = ctx.getImageData(0, 0, canvas.width -1, canvas.height - 1);
-    imageData = ctx.getImageData(0, 0, canvas.width-1, canvas.height-1);
-    crazyColour(imageData);
-    ctx.putImageData(imageData, 0, 0);
+    crazyColour(image);
     if (videoOn === true)
         window.requestAnimationFrame(processFrame);
 };
@@ -50,8 +27,9 @@ function flipVideoFeed() {
         navigator.mediaDevices.getUserMedia( {audio: false, video: true })
             .then((stream) => {video.srcObject = stream; localStream = stream;})
             .then(window.requestAnimationFrame(processFrame))
-            .catch(error => console.error(error));
+            .catch(error => console.error(error)); 
         videoOn = true;
+        loop = 2;
     } else {
         localStream.getTracks()[0].stop();
         videoOn = false;
@@ -67,16 +45,9 @@ function handleImage(e){
     reader.onload = function(event){
         img.src = event.target.result;
         img.onload = () => {
-            ctx.drawImage(img, 0, 0);
-            let imageData = ctx.getImageData(0, 0, canvas.width -1, canvas.height - 1);
-            imageData = crazyColour(imageData)
-            ctx.putImageData(imageData, 0, 0);
-        }   
-    }   
-    reader.readAsDataURL(e.target.files[0]);
-}   
+            crazyColour(img)
+        }
+    }
+    reader.readAsDataURL(e.target.files[0]);     
+}
 
-
-    </script>
-  </body>
-</html>
