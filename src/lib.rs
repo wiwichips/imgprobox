@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 // Called when the wasm module is instantiated
 #[wasm_bindgen(start)]
@@ -24,6 +24,37 @@ fn main() -> Result<(), JsValue> {
 #[wasm_bindgen]
 extern {
     fn alert(s: &str);
+}
+
+
+#[derive(Serialize, Deserialize)]
+pub struct ImageData {
+    pub data: Vec<u8>,
+    pub width: u32,
+    pub height: u32,
+}
+
+pub fn clamp(val: u8, min: u8, max: u8) -> u8 {
+    if val < min {
+        return min;
+    }
+    if val > max {
+        return max;
+    }
+    return val;
+}
+
+#[wasm_bindgen]
+pub fn process_image(val: &JsValue) -> JsValue {
+    let img: ImageData = val.into_serde().unwrap();
+    let mut data = img.data;
+    // invert the image,,, just as a test
+    for i in (0..data.len()).step_by(4) {
+        for j in (0..3).step_by(1) {
+            data[i + j] = clamp(255 - data[i + j], 0, 255) as u8;
+        }
+    }
+    return JsValue::from_serde(&data).unwrap(); 
 }
 
 #[wasm_bindgen]

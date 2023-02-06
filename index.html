@@ -14,7 +14,7 @@
 
     <!-- Note the usage of `type=module` here as this is an ES6 module -->
     <script type="module">
-        import { run, grayscale, changeColour, crazyColour } from "./toolbox.js"
+        import { run, grayscale, changeColour, crazyColour, rustImage } from "./toolbox.js"
         run(); // load wasm
 
         // upload image
@@ -37,8 +37,11 @@ function processFrame() {
     ctx.drawImage(image, 0, 0);
     let imageData = ctx.getImageData(0, 0, canvas.width -1, canvas.height - 1);
     imageData = ctx.getImageData(0, 0, canvas.width-1, canvas.height-1);
-    crazyColour(imageData);
-    ctx.putImageData(imageData, 0, 0);
+    let new_data_from_rust = rustImage(imageData);
+    const width = Math.max(1, Math.floor(imageData.width));
+    const height = Math.max(1, Math.floor(imageData.height));
+    const newImageData = new ImageData(new_data_from_rust, width, height);
+    ctx.putImageData(newImageData, 0, 0);
     if (videoOn === true)
         window.requestAnimationFrame(processFrame);
 };

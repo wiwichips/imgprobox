@@ -1,5 +1,5 @@
 import init, { add, greet } from './pkg/without_a_bundler.js';
-import { send_example_to_js, receive_example_from_js } from "./pkg/without_a_bundler.js";
+import { send_example_to_js, receive_example_from_js, process_image } from "./pkg/without_a_bundler.js";
 
 
 export async function run() {
@@ -65,4 +65,14 @@ export function crazyColour(imageData) {
   }
   return imageData;
 };
+
+export function rustImage(imageData) {
+    const data = Array.from(imageData.data);
+    
+    // send the data array to rust
+    let test = process_image({ data: data, width: 0, height: 0 });
+
+    // get the data array back from rust
+    return new Uint8ClampedArray(test);
+}
 
