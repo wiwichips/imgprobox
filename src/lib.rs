@@ -1,37 +1,14 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use std::{collections::HashMap, vec};
-
-// Called when the wasm module is instantiated
-#[wasm_bindgen(start)]
-fn main() -> Result<(), JsValue> {
-    // Use `web_sys`'s global `window` function to get a handle on the global
-    // window object.
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document on window");
-    let body = document.body().expect("document should have a body");
-
-    // Manufacture the element we're gonna append
-    let val = document.create_element("p")?;
-    val.set_inner_html("Hello from Pringle!");
-
-    body.append_child(&val)?;
-
-    Ok(())
-}
-
+use web_sys::{CanvasRenderingContext2d, ImageData};
+use wasm_bindgen::Clamped;
 
 #[wasm_bindgen]
-extern {
-    fn alert(s: &str);
-}
-
-
-#[derive(Serialize, Deserialize)]
-pub struct ImageData {
-    pub data: Vec<u8>,
-    pub width: u32,
-    pub height: u32,
+pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
+    let currentImage = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
+    let mut data = rotate_colours(width, height, currentImage);
+    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
+    ctx.put_image_data(&data, 0.1, 0.0)
 }
 
 pub fn clamp(val: u8, min: u8, max: u8) -> u8 {
@@ -44,51 +21,28 @@ pub fn clamp(val: u8, min: u8, max: u8) -> u8 {
     return val;
 }
 
-#[wasm_bindgen]
-pub fn process_image(val: &JsValue) -> JsValue {
-    let img: ImageData = val.into_serde().unwrap();
-    let mut data = img.data;
-    // invert the image,,, just as a test
-    for i in (0..data.len()).step_by(4) {
-        for j in (0..3).step_by(1) {
-            data[i + j] = clamp(255 - data[i + j], 0, 255) as u8;
+fn grayscale(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for i in (0..clamped.len()).step_by(4) {
+        for j in 0..3 {
+            data.push(clamp(255 - clamped[(i+j) as usize],0,255) as u8);
         }
+        data.push(255 as u8);
     }
-    return JsValue::from_serde(&data).unwrap(); 
+    data
 }
 
-#[wasm_bindgen]
-pub fn add(a: u32, b: u32) -> u32 {
-    a + b
-}
-
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Example {
-    pub field1: HashMap<u32, String>,
-    pub field2: Vec<Vec<f32>>,
-    pub field3: [f32; 4],
-}
-
-#[wasm_bindgen]
-pub fn send_example_to_js() -> JsValue {
-    let mut field1 = HashMap::new();
-    field1.insert(0, String::from("ex"));
-    let example = Example {
-        field1,
-        field2: vec![vec![1., 2.], vec![3., 4.]],
-        field3: [1., 2., 3., 4.]
-    };
-
-    JsValue::from_serde(&example).unwrap()
+fn rotate_colours(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for i in (0..clamped.len()).step_by(4) {
+        data.push(clamped[i+2] as u8);
+        data.push(clamped[i+0] as u8);
+        data.push(clamped[i+1] as u8);
+        data.push(255 as u8);
+    }
+    data
 }
 
 
-#[wasm_bindgen]
-pub fn receive_example_from_js(val: &JsValue) {
-    let example: Example = val.into_serde().unwrap();
-}

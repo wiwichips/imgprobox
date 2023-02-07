@@ -1,24 +1,6 @@
-import init, { add, greet } from './pkg/without_a_bundler.js';
-import { send_example_to_js, receive_example_from_js, process_image } from "./pkg/without_a_bundler.js";
-
-
-export async function run() {
-  // First up we need to actually load the wasm file, so we use the
-  await init();
-
-  // And afterwards we can use all the functionality defined in wasm.
-  const result = add(1, 2);
-  greet(`1 + 2 = ${result}`);
-  if (result !== 3)
-    throw new Error("wasm addition doesn't work!");
-
-  let example = send_example_to_js(); // get the example from wasm
-
-  console.log(example);
-
-  example.field2.push([5, 6]); // add another vec element to the end of the vec array
-  receive_example_from_js(example); // send it back to rust wasm
-}
+//import init, { add, greet } from './pkg/without_a_bundler.js';
+//import { send_example_to_js, receive_example_from_js, process_image } from "./pkg/without_a_bundler.js";
+import init, { draw } from './pkg/without_a_bundler.js';
 
 export function grayscale(img) {
   ctx.drawImage(img, 0, 0);
@@ -66,13 +48,7 @@ export function crazyColour(imageData) {
   return imageData;
 };
 
-export function rustImage(imageData) {
-    const data = Array.from(imageData.data);
-    
-    // send the data array to rust
-    let test = process_image({ data: data, width: 0, height: 0 });
-
-    // get the data array back from rust
-    return new Uint8ClampedArray(test);
+export function rustImage(ctx) {
+    draw(ctx, 600, 600, -0.15, 0.65);
 }
 
