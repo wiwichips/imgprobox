@@ -30,10 +30,11 @@ init()
     .then(() => import('./pkg/without_a_bundler.js'))
     .then(wasm => {
         button.onclick = flipVideoFeed;
-
+/*
         button.addEventListener('click', () => {
             wasm.draw(ctx, 600, 600);
         });
+*/
 
         
         imageLoader.addEventListener('change', handleImage, false);
@@ -80,9 +81,7 @@ init()
                 img.src = event.target.result;
                 img.onload = () => {
                     ctx.drawImage(img, 0, 0);
-                    let imageData = ctx.getImageData(0, 0, canvas.width -1, canvas.height - 1);
-                    imageData = crazyColour(imageData)
-                    ctx.putImageData(imageData, 0, 0);
+                    wasm.draw(ctx, 600, 600);
                 }   
             }   
             reader.readAsDataURL(e.target.files[0]);

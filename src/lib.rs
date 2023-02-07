@@ -1,17 +1,18 @@
 use wasm_bindgen::prelude::*;
-use serde::{Serialize, Deserialize};
 use web_sys::{CanvasRenderingContext2d, ImageData};
 use wasm_bindgen::Clamped;
+use std::convert::TryInto;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
     let currentImage = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
-    let mut data = rotate_colours(width, height, currentImage);
+    let mut data = blur_nearest_neighbours(width, height, currentImage);
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
     ctx.put_image_data(&data, 0.1, 0.0)
 }
 
-pub fn clamp(val: u8, min: u8, max: u8) -> u8 {
+// helper functions
+fn clip(val: u8, min: u8, max: u8) -> u8 {
     if val < min {
         return min;
     }
@@ -21,12 +22,17 @@ pub fn clamp(val: u8, min: u8, max: u8) -> u8 {
     return val;
 }
 
+fn get_pixel_idx(width: u32, height: u32, x: u32, y: u32) -> u32 {
+    ((width * y + x) * 4) as u32
+}
+
+// image processing functions
 fn grayscale(width: u32, height: u32, img: ImageData) -> Vec<u8> {
     let mut data = Vec::new();
     let clamped = img.data();
     for i in (0..clamped.len()).step_by(4) {
         for j in 0..3 {
-            data.push(clamp(255 - clamped[(i+j) as usize],0,255) as u8);
+            data.push(clip(255 - clamped[(i+j) as usize],0,255) as u8);
         }
         data.push(255 as u8);
     }
@@ -45,4 +51,58 @@ fn rotate_colours(width: u32, height: u32, img: ImageData) -> Vec<u8> {
     data
 }
 
+fn cool_effect_01(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for y in 0..height {
+        for x in 0..width {
+            data.push(clamped[get_pixel_idx(width, height, x, y) as usize] as u8);
+            data.push(clamped[(y*height+x) as usize] as u8);
+            data.push(clamped[(x*width+y) as usize] as u8);
+            data.push(255 as u8);
+        }
+    }
+    data
+}
 
+fn flip_horizontal(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for y in 0..height {
+        for x in 0..width {
+            data.push(clamped[get_pixel_idx(width, height, width-1-x, y) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, width-1-x, y) + 1) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, width-1-x, y) + 2) as usize] as u8);
+            data.push(255 as u8);
+        }
+    }
+    data
+}
+
+fn flip_vertical(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for y in 0..height {
+        for x in 0..width {
+            data.push(clamped[get_pixel_idx(width, height, x, height-1-y) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, x, height-1-y) + 1) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, x, height-1-y) + 2) as usize] as u8);
+            data.push(255 as u8);
+        }
+    }
+    data
+}
+
+fn blur_nearest_neighbours(width: u32, height: u32, img: ImageData) -> Vec<u8> {
+    let mut data = Vec::new();
+    let clamped = img.data();
+    for y in 0..height {
+        for x in 0..width {
+            data.push(clamped[get_pixel_idx(width, height, x, height-1-y) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, x, height-1-y) + 1) as usize] as u8);
+            data.push(clamped[(get_pixel_idx(width, height, x, height-1-y) + 2) as usize] as u8);
+            data.push(255 as u8);
+        }
+    }
+    data
+}
