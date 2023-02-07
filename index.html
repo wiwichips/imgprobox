@@ -6,10 +6,10 @@
     <!-- file upload -->
     <input type="file" id="imageLoader" name="imageLoader"/>
     <label>Image File:</label><br/>
-    <canvas id="canvas" width="600" height="600"></canvas>
+    <canvas id="canvas" width="600" height="600" style="width: 40%"></canvas>
 
     <!-- video -->
-    <video playsinline autoplay></video>
+    <video playsinline autoplay style="width:40%"></video>
     <button>Take snapshot</button>
 
     <!-- Note the usage of `type=module` here as this is an ES6 module -->
@@ -23,8 +23,6 @@ const video = document.querySelector('video');
 const button = document.querySelector('button');
 
 import init from './pkg/without_a_bundler.js';
-
-var funky_monkey = undefined;
 
 init()
     .then(() => import('./pkg/without_a_bundler.js'))
