@@ -114,7 +114,7 @@ fn rotate_90(width: u32, height: u32, img: ImageData) -> Vec<u8> {
     for y in 0..height {
         for x in 0..width {
             let old_idx = get_pixel_idx(height, width, y, x) as usize;
-            let new_idx = get_pixel_idx(width, height, x, y) as usize;
+            let new_idx = get_pixel_idx(width, height, x, height-1-y) as usize;
             data[new_idx] = clamped[old_idx];
             data[new_idx+1] = clamped[old_idx+1];
             data[new_idx+2] = clamped[old_idx+2];
