@@ -8,7 +8,7 @@ mod image;
 use image::Image;
 
 mod helpers;
-use helpers::
+use helpers::PaddingFn;
 
 mod convolution;
 use convolution::Kernel;
