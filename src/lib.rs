@@ -2,23 +2,42 @@ use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, ImageData};
 use wasm_bindgen::Clamped;
 use web_sys::console;
+use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
 
 mod image;
 use image::Image;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
-    let currentImage = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
-    let mut data = cool_effect_01(width, height, &currentImage);
+    let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
+
+
+    let clamped_data = current_image.data();
+
+    let mut my_image = Image::new(clamped_data.to_vec(), width, height);
+
+
+    let mut data = cool_effect_02(&mut my_image);
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
 
+/*
     let js: JsValue = width.into();
     console::log_2(&"print\t".into(), &js);
+*/
 
 
     ctx.put_image_data(&data, 0.1, 0.0)
 }
 
+fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
+    for y in 0..img.m {
+        for x in 0..img.n {
+            let (r, g, b) = img.get_pixel_intensity(x, y);
+            img.set_pixel_intensity(x,y, (b,g,r));
+        }
+    }
+    return img.get_array();
+}
 // helper functions
 fn clip(val: u8, min: u8, max: u8) -> u8 {
     if val < min {

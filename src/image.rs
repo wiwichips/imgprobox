@@ -1,13 +1,9 @@
 
-pub fn hello_world() -> u32 {
-    return 1;
-}
-
 // Image Struct
 pub struct Image {
-    array:  Vec<u8>,// canvas data (1d)
-    m:      u32,    // rows / height
-    n:      u32,    // cols / width
+    array: Vec<u8>,// canvas data (1d)
+    pub m: u32,    // rows / height
+    pub n: u32,    // cols / width
 }
 
 impl Image {
@@ -28,6 +24,10 @@ impl Image {
     }
 
     pub fn get_pixel_index(&self, x: u32, y: u32) -> usize {
-        ((self.n * y + x)) as usize
+        ((self.m * y + x) * 4) as usize
+    }
+
+    pub fn get_array(&self) -> &Vec<u8> {
+        &self.array
     }
 }
