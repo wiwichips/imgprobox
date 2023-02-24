@@ -6,7 +6,7 @@
     <!-- file upload -->
     <input type="file" id="imageLoader" name="imageLoader"/>
     <label>Image File:</label><br/>
-    <canvas id="canvas" width="600" height="600" style="width: 40%"></canvas>
+    <canvas id="canvas" width="640" height="640" style="width: 40%"></canvas>
 
     <!-- video -->
     <video playsinline autoplay style="width:40%"></video>
@@ -30,7 +30,7 @@ init()
         button.onclick = flipVideoFeed;
 /*
         button.addEventListener('click', () => {
-            wasm.draw(ctx, 600, 600);
+            wasm.draw(ctx, 640, 640);
         });
 */
 
@@ -42,14 +42,16 @@ init()
             /* set the canvas to the dimensions of the video feed */
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+
             /* make the snapshot */
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
             //extra
             let image = new Image();
             image.src = canvas.toDataURL();
             ctx.drawImage(image, 0, 0);
 
-            wasm.draw(ctx, 600, 600);
+            wasm.draw(ctx, 640, 640);
 
             if (videoOn === true)
                 window.requestAnimationFrame(processFrame);
@@ -79,14 +81,14 @@ init()
                 img.src = event.target.result;
                 img.onload = () => {
                     ctx.drawImage(img, 0, 0);
-                    wasm.draw(ctx, 600, 600);
+                    wasm.draw(ctx, 640, 640);
                 }   
             }   
             reader.readAsDataURL(e.target.files[0]);
         }   
 
 
-        wasm.draw(ctx, 600, 600);
+        wasm.draw(ctx, 640, 640);
     })
     .catch(console.error);
 
