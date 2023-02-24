@@ -1,12 +1,21 @@
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, ImageData};
 use wasm_bindgen::Clamped;
+use web_sys::console;
+
+mod image;
+use image::Image;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
     let currentImage = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
-    let mut data = grayscale(width, height, &currentImage);
+    let mut data = cool_effect_01(width, height, &currentImage);
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
+
+    let js: JsValue = width.into();
+    console::log_2(&"print\t".into(), &js);
+
+
     ctx.put_image_data(&data, 0.1, 0.0)
 }
 
@@ -113,7 +122,6 @@ fn flip_vertical(width: u32, height: u32, img: &ImageData) -> Vec<u8> {
 }
 
 fn avg_pixel(height: u32, width: u32, img_data: &Vec<u8>) -> Vec<u8> {
-    use web_sys::console;
 
     let mut new_pixel = vec![255;4];
     let mut r = 0;
@@ -123,6 +131,8 @@ fn avg_pixel(height: u32, width: u32, img_data: &Vec<u8>) -> Vec<u8> {
         r += img_data[i] as u32;
         g += img_data[i+1] as u32;
         b += img_data[i+2] as u32;
+    
+    use web_sys::console;
 /*
     let js: JsValue = img_data[0].into();
     console::log_2(&"Logging arbitrary values looks like".into(), &js);
