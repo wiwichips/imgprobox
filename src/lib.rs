@@ -7,6 +7,8 @@ use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
 mod image;
 use image::Image;
 
+mod helpers;
+use helpers::
 
 mod convolution;
 use convolution::Kernel;
@@ -15,7 +17,7 @@ use convolution::Kernel;
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
     let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
     let clamped_data = current_image.data();
-    let mut my_image = Image::new(clamped_data.to_vec(), width, height);
+    let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
     let mut data = cool_effect_02(&mut my_image);
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
 
@@ -29,8 +31,8 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 }
 
 fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
-    for y in 0..img.m {
-        for x in 0..img.n {
+    for y in 0i32..img.m {
+        for x in 0i32..img.n {
             let (r, g, b) = img.get_pixel_intensity(x, y);
             img.set_pixel_intensity(x,y, (b,g,r));
         }
