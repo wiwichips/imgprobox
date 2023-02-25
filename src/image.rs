@@ -1,5 +1,3 @@
-use crate::helpers::PaddingFn;
-
 // Image Struct
 pub struct Image {
     array: Vec<u8>,// canvas data (1d)
@@ -17,8 +15,8 @@ impl Image {
         return (self.array[index], self.array[index + 1], self.array[index + 2])
     }
 
-    pub fn get_pixel_intensity_padding<P: PaddingFn>(&self, padding_fn: P, x: i32, y: i32) -> (u8,u8,u8) {
-        return padding_fn.pad(&self, x, y);
+    pub fn get_pixel_intensity_padding(&self, x: i32, y: i32, pad: fn(&Image, i32, i32) -> (u8,u8,u8)) -> (u8,u8,u8) {
+        return pad(&self, x, y);
     }
 
     pub fn set_pixel_intensity(&mut self, x: i32, y: i32, rgb: (u8,u8,u8)) {
@@ -34,5 +32,13 @@ impl Image {
 
     pub fn get_array(&self) -> &Vec<u8> {
         &self.array
+    }
+
+    pub fn copy(&self) -> Image {
+        let mut img = Image { array: vec![255; self.array.len()], m: self.m, n: self.n }; 
+        for i in 0usize..self.array.len() {
+            img.array[i] = self.array[i];
+        }
+        return img;
     }
 }

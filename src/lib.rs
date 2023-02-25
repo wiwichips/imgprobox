@@ -1,17 +1,17 @@
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, ImageData};
 use wasm_bindgen::Clamped;
-use web_sys::console;
-use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
+//use web_sys::console;
+//use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
 
 mod image;
 use image::Image;
 
 mod helpers;
-use helpers::PaddingFn;
+//use helpers::PaddingFn;
 
 mod convolution;
-use convolution::Kernel;
+//use convolution::Kernel;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
@@ -153,7 +153,6 @@ fn avg_pixel(height: u32, width: u32, img_data: &Vec<u8>) -> Vec<u8> {
         g += img_data[i+1] as u32;
         b += img_data[i+2] as u32;
     
-    use web_sys::console;
 /*
     let js: JsValue = img_data[0].into();
     console::log_2(&"Logging arbitrary values looks like".into(), &js);
