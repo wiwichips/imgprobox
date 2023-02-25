@@ -54,14 +54,11 @@ impl Kernel {
         sum
     }
 
-    pub fn convolve(&self, img: &Image) -> Image {
-        let mut img_out = Image::new(vec![255; self.array.len()], img.m, img.n);
-
+    pub fn convolve(&self, img: &Image, img_out: &mut Image) {
         for y in 0i32..img.n {
-            for x in 0i32..self.m {
+            for x in 0i32..img.m {
                 img_out.set_pixel_intensity(x,y,self.get_sum_at_index(x,y,img));
             }
         }
-        return img_out;
     }
 }
