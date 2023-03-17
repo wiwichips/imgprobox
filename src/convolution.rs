@@ -23,13 +23,13 @@ impl Kernel {
         let mut sum_b: f64 = 0.0;
 
         // initialize the part of the image to look at
-        let left: i32 = -(self.n - 1) / 2;
-        let top:  i32 = -(self.m - 1) / 2;
+        let left: i32 = -1 * (self.n - 1) / 2;
+        let top:  i32 = -1 * (self.m - 1) / 2;
 
         // iterate through each element in the kernel and apply it to the image
         for j in 0i32..self.n {
             for i in 0i32..self.m {
-                let (r,g,b) = pad(&img, x + i - left, y + j - top);
+                let (r,g,b) = pad(&img, x + i + left, y + j + top);
                 sum_r += r as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];
                 sum_g += g as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];
                 sum_b += b as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];

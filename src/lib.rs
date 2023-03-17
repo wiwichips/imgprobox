@@ -23,8 +23,9 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
     //let mut img_out = my_image.copy();
 
     //let mut data = cool_effect_02(&mut my_image);
-    convo_test_01(&mut my_image, &mut img_out);
-    let mut data = img_out.get_array();
+    //convo_test_01(&mut my_image, &mut img_out);
+    gray_scale(&mut my_image);
+    let mut data = my_image.get_array();
 
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
 
@@ -38,6 +39,24 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 }
 
 fn convo_test_01(img: &mut Image, img_out: &mut Image) {
+    let matrix = vec![
+        vec![0.33,0.33,0.33],
+        vec![0.33,0.33,0.33],
+        vec![0.33,0.33,0.33],
+    ]; 
+    let h = Kernel::new(matrix, 3,3);
+    h.convolve(img, img_out);
+}
+
+fn convo_test_02(img: &mut Image, img_out: &mut Image) {
+    let matrix = vec![
+        vec![1.0],
+    ]; 
+    let h = Kernel::new(matrix, 1,1);
+    h.convolve(img, img_out);
+}
+
+fn convo_test_03(img: &mut Image, img_out: &mut Image) {
     let matrix = vec![
         vec![1.0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
         vec![0.0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
@@ -59,5 +78,14 @@ fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
         }
     }
     return img.get_array();
+}
+
+fn gray_scale(img: &mut Image) {
+    for y in 0i32..img.m {
+        for x in 0i32..img.n {
+            let (r, g, b) = img.get_pixel_intensity(x, y);
+            img.set_pixel_intensity(x,y, (255 - r, 255 - g, 255 - b));
+        }
+    }
 }
 
