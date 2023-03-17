@@ -7,7 +7,7 @@ use wasm_bindgen::Clamped;
 mod image;
 use image::Image;
 
-mod helpers;
+mod padding;
 //use helpers::PaddingFn;
 
 mod convolution;
@@ -19,7 +19,7 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
     let clamped_data = current_image.data();
 
     let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
-    let mut img_out = Image::new(vec![255; my_image.get_array().len()], my_image.m, my_image.n);
+    let mut img_out = Image::new(vec![255; my_image.get_array().len()], my_image.height, my_image.width);
     //let mut img_out = my_image.copy();
 
     //let mut data = cool_effect_02(&mut my_image);
@@ -71,8 +71,8 @@ fn convo_test_03(img: &mut Image, img_out: &mut Image) {
 }
 
 fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
-    for y in 0i32..img.m {
-        for x in 0i32..img.n {
+    for y in 0i32..img.height {
+        for x in 0i32..img.width {
             let (r, g, b) = img.get_pixel_intensity(x, y);
             img.set_pixel_intensity(x,y, (b,g,r));
         }
@@ -81,8 +81,8 @@ fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
 }
 
 fn gray_scale(img: &mut Image) {
-    for y in 0i32..img.m {
-        for x in 0i32..img.n {
+    for y in 0i32..img.height {
+        for x in 0i32..img.width {
             let (r, g, b) = img.get_pixel_intensity(x, y);
             img.set_pixel_intensity(x,y, (255 - r, 255 - g, 255 - b));
         }
