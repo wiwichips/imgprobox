@@ -46,8 +46,8 @@ impl Kernel {
 
     pub fn sum(&self) -> f64 {
         let mut sum: f64 = 0.0;
-        for j in 0i32..self.width {
-            for i in 0i32..self.height {
+        for j in 0i32..self.height {
+            for i in 0i32..self.width {
                 sum += self.array[j as usize][i as usize];
             }
         }

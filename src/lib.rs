@@ -13,6 +13,9 @@ mod padding;
 mod convolution;
 use convolution::Kernel;
 
+mod single_pixel_operations;
+use single_pixel_operations::{apply_spo, invert};
+
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
     let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
@@ -20,11 +23,10 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 
     let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
     let mut img_out = Image::new(vec![255; my_image.get_array().len()], my_image.height, my_image.width);
-    //let mut img_out = my_image.copy();
 
     //let mut data = cool_effect_02(&mut my_image);
-    //convo_test_01(&mut my_image, &mut img_out);
-    gray_scale(&mut my_image);
+    //convo_test_02(&mut my_image, &mut img_out);
+    test_spo(&mut my_image);
     let mut data = my_image.get_array();
 
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
@@ -36,6 +38,10 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 
 
     ctx.put_image_data(&data, 0.1, 0.0)
+}
+
+fn test_spo(img: &mut Image) {
+    apply_spo(img, invert);
 }
 
 fn convo_test_01(img: &mut Image, img_out: &mut Image) {
@@ -51,8 +57,12 @@ fn convo_test_01(img: &mut Image, img_out: &mut Image) {
 fn convo_test_02(img: &mut Image, img_out: &mut Image) {
     let matrix = vec![
         vec![1.0],
+        vec![0.0],
+        vec![0.0],
+        vec![0.0],
+        vec![-1.0],
     ]; 
-    let h = Kernel::new(matrix, 1,1);
+    let h = Kernel::new(matrix, 1,5);
     h.convolve(img, img_out);
 }
 
