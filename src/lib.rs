@@ -14,7 +14,7 @@ mod convolution;
 use convolution::Kernel;
 
 mod single_pixel_operations;
-use single_pixel_operations::{invert, linear_mapping, power_law_mapping};
+use single_pixel_operations::{apply_spo, apply_multi_channel_spo, invert, grayscale, linear_mapping, power_law_mapping, apply_spo_chain, single_to_tri, generate_linear_mapping, fn_to_opaque, generate_power_mapping, SinglePixelOperation};
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
@@ -26,7 +26,7 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 
     //let mut data = cool_effect_02(&mut my_image);
     //convo_test_02(&mut my_image, &mut img_out);
-    test_power_law(&mut my_image);
+    test_spo_chain(&mut my_image);
     let mut data = my_image.get_array();
 
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
@@ -38,6 +38,21 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 
 
     ctx.put_image_data(&data, 0.1, 0.0)
+}
+
+fn test_spo_chain(img: &mut Image) {
+    let spo = single_to_tri(generate_linear_mapping(-1, 255));
+    let spo_pm = single_to_tri(generate_power_mapping(5.0)); 
+    let spo_g = fn_to_opaque(grayscale);
+
+    //let spo_arr = vec![&spo, &spo, &spo, &spo, &spo];
+    let spo_arr: Vec<Box<dyn SinglePixelOperation>> = vec![Box::new(spo), Box::new(spo_pm), Box::new(spo_g)];
+
+    apply_spo_chain(img, spo_arr);
+}
+
+fn test_gray_scale(img: &mut Image) {
+    apply_multi_channel_spo(img, grayscale);
 }
 
 fn test_power_law(img: &mut Image) {
@@ -92,14 +107,5 @@ fn cool_effect_02(img: &mut Image) -> &Vec<u8> {
         }
     }
     return img.get_array();
-}
-
-fn gray_scale(img: &mut Image) {
-    for y in 0i32..img.height {
-        for x in 0i32..img.width {
-            let (r, g, b) = img.get_pixel_intensity(x, y);
-            img.set_pixel_intensity(x,y, (255 - r, 255 - g, 255 - b));
-        }
-    }
 }
 
