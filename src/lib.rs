@@ -14,7 +14,9 @@ mod convolution;
 use convolution::Kernel;
 
 mod single_pixel_operations;
-use single_pixel_operations::{apply_spo, apply_multi_channel_spo, invert, grayscale, linear_mapping, power_law_mapping, apply_spo_chain, single_to_tri, generate_linear_mapping, fn_to_opaque, generate_power_mapping, SinglePixelOperation};
+use single_pixel_operations::{apply_spo, apply_multi_channel_spo, invert, grayscale, linear_mapping, power_law_mapping, apply_spo_chain, single_to_tri, generate_linear_mapping, fn_to_opaque, generate_power_mapping, SinglePixelOperation, generate_threshold_mapping};
+
+mod binary_spo;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
@@ -38,6 +40,11 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 
 
     ctx.put_image_data(&data, 0.1, 0.0)
+}
+
+fn test_spo_thresh(img: &mut Image) {
+    let spo = generate_threshold_mapping(50);
+    apply_spo(img, spo);
 }
 
 fn test_spo_chain(img: &mut Image) {

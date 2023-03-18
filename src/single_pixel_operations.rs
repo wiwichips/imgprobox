@@ -84,7 +84,7 @@ where
     }
 }
 
-// linear mappings
+// linear mappings --------------------------------------------------
 pub fn generate_linear_mapping(a: i32, b: i32) -> impl Fn(u8) -> u8 {
     move |intensity: u8| -> u8 {
         (a * intensity as i32 + b) as u8
@@ -95,7 +95,13 @@ pub fn linear_mapping(img: &mut Image, a: i32, b: i32) {
     apply_spo(img, generate_linear_mapping(-1, 255));
 }
 
-// power law mappings
+// thresholding -----------------------------------------------------
+// TODO fix thresholding
+pub fn generate_threshold_mapping(u: i32) -> impl Fn(u8) -> u8 {
+    generate_linear_mapping(255, (-256) * u)
+}
+
+// power law mappings -----------------------------------------------
 pub fn generate_power_mapping(gamma: f64) -> impl Fn(u8) -> u8 {
     let l = 256.0;
     let y = gamma;
@@ -134,4 +140,5 @@ pub fn grayscale(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
     let avg = sum / 3.0;
     (avg as u8, avg as u8, avg as u8)
 }
+
 
