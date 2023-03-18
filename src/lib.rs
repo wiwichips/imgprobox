@@ -14,7 +14,7 @@ mod convolution;
 use convolution::Kernel;
 
 mod single_pixel_operations;
-use single_pixel_operations::{apply_spo, invert};
+use single_pixel_operations::{apply_spo, invert, generate_linear_mapping, generate_power_mapping};
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
@@ -22,11 +22,11 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
     let clamped_data = current_image.data();
 
     let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
-    let mut img_out = Image::new(vec![255; my_image.get_array().len()], my_image.height, my_image.width);
+    //let mut img_out = Image::new(vec![255; my_image.get_array().len()], my_image.height, my_image.width);
 
     //let mut data = cool_effect_02(&mut my_image);
     //convo_test_02(&mut my_image, &mut img_out);
-    test_spo(&mut my_image);
+    test_power_law(&mut my_image);
     let mut data = my_image.get_array();
 
     let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
@@ -40,8 +40,12 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
     ctx.put_image_data(&data, 0.1, 0.0)
 }
 
+fn test_power_law(img: &mut Image) {
+    apply_spo(img, generate_power_mapping(2.0));
+}
+
 fn test_spo(img: &mut Image) {
-    apply_spo(img, invert);
+    apply_spo(img, generate_linear_mapping(-1, 255));
 }
 
 fn convo_test_01(img: &mut Image, img_out: &mut Image) {
