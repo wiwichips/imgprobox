@@ -14,7 +14,7 @@ mod convolution;
 use convolution::Kernel;
 
 mod single_pixel_operations;
-use single_pixel_operations::{apply_spo, invert, generate_linear_mapping, generate_power_mapping};
+use single_pixel_operations::{invert, linear_mapping, power_law_mapping};
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
@@ -41,11 +41,11 @@ pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(
 }
 
 fn test_power_law(img: &mut Image) {
-    apply_spo(img, generate_power_mapping(2.0));
+    power_law_mapping(img, 0.5);
 }
 
 fn test_spo(img: &mut Image) {
-    apply_spo(img, generate_linear_mapping(-1, 255));
+    linear_mapping(img, -1, 255);
 }
 
 fn convo_test_01(img: &mut Image, img_out: &mut Image) {
