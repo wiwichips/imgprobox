@@ -16,7 +16,7 @@ use convolution::Kernel;
 mod single_pixel_operations;
 use single_pixel_operations::{apply_spo, apply_multi_channel_spo, invert, grayscale, linear_mapping, power_law_mapping, apply_spo_chain, single_to_tri, generate_linear_mapping, fn_to_opaque, generate_power_mapping, SinglePixelOperation, generate_threshold_mapping};
 
-mod binary_spo;
+//mod binary_spo;
 
 #[wasm_bindgen]
 pub fn draw(ctx: &CanvasRenderingContext2d, width: u32, height: u32) -> Result<(), JsValue> {
