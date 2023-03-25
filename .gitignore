@@ -2,4 +2,3 @@ __pycache__
 *.swp
 
 target/*
-node_modules/*
