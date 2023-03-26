@@ -7,6 +7,7 @@ function App() {
   const videoRef = useRef();
   const fileInputRef = useRef();
   const buttonRef = useRef();
+  let videoOn = false;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -14,7 +15,6 @@ function App() {
     const button = buttonRef.current;
     const fileInput = fileInputRef.current;
     let localStream;
-    let videoOn = false;
 
     async function initialize() {
       await init();
@@ -69,7 +69,8 @@ function App() {
             canvas.height = img.height;
 
             canvas.getContext('2d').drawImage(img, 0, 0);
-            draw(canvas.getContext('2d'), 640, 640);
+            console.log(canvas.width, canvas.height);
+            draw(canvas.getContext('2d'), canvas.width, 640);
           };
         };
         reader.readAsDataURL(e.target.files[0]);
@@ -103,7 +104,7 @@ return (
       <div className="col-4 bg-success"></div>
       <div className="col-4 bg-info">
         <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
-        <button ref={buttonRef} className="btn btn-primary mt-2">Take snapshot</button>
+        <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
       </div>
       <div className="col-4 bg-success"></div>
     </div>
