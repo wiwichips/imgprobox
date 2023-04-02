@@ -22,10 +22,12 @@ where
 
 // Modify the apply_spo_chain function to accept Vec<Box<dyn SinglePixelOperation>>
 pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperation>>) {
+/*
     let js: JsValue = img.width.into();
     console::log_2(&"width\t".into(), &js);
     let js: JsValue = img.height.into();
     console::log_2(&"height\t".into(), &js);
+*/
 
     for x in 0i32..img.width {
         for y in 0i32..img.height {
