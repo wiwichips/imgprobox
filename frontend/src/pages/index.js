@@ -58,21 +58,21 @@ function App() {
         }
       }
 
+
       function handleImage(e) {
         var reader = new FileReader();
         const img = new Image();
+        img.onload = () => {
+          // Set canvas dimensions to match the uploaded image
+          console.log("JS --> " + img.width + " and " + img.height);
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          draw(canvas.getContext('2d'), canvas.width, canvas.height);
+        };
         reader.onload = function (event) {
           img.src = event.target.result;
-          img.onload = () => {
-            console.log("made it into the onload onload");
-            // Set canvas dimensions to match the uploaded image
-            console.log("JS --> " + img.width + " and " + img.height);
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            draw(canvas.getContext('2d'), canvas.width, canvas.height);
-          };
         };
         reader.readAsDataURL(e.target.files[0]);
       }
