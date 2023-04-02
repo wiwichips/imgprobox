@@ -1,16 +1,21 @@
 use crate::image::Image;
-use crate::helpers::padding_zero;
+use crate::padding::padding_zero;
+
+use web_sys::console;
+use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
+use wasm_bindgen::prelude::*;
+
 
 // Kernel Struct
 pub struct Kernel {
     array: Vec<Vec<f64>>, // actual 2d kernel
-    pub m: i32,           // rows / height
-    pub n: i32,           // cols / width
+    pub width: i32,           // cols / width
+    pub height: i32,           // rows / height
 }
 
 impl Kernel {
-    pub fn new(data: Vec<Vec<f64>>, m: i32, n: i32) -> Self {
-        Kernel { array: data, m, n }
+    pub fn new(data: Vec<Vec<f64>>, width: i32, height: i32) -> Self {
+        Kernel { array: data, width, height }
     }
 
     fn get_element(&self, x: i32, y: i32) -> f64 {
@@ -23,19 +28,19 @@ impl Kernel {
         let mut sum_b: f64 = 0.0;
 
         // initialize the part of the image to look at
-        let left: i32 = -1 * (self.n - 1) / 2;
-        let top:  i32 = -1 * (self.m - 1) / 2;
+        let left: i32 = -1 * (self.width - 1) / 2;
+        let top:  i32 = -1 * (self.height - 1) / 2;
 
         // iterate through each element in the kernel and apply it to the image
-        for j in 0i32..self.n {
-            for i in 0i32..self.m {
+        for i in 0i32..self.width {
+            for j in 0i32..self.height {
                 let (r,g,b) = pad(&img, x + i + left, y + j + top);
-                sum_r += r as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];
-                sum_g += g as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];
-                sum_b += b as f64 * self.array[(self.n - j - 1) as usize][(self.m - i - 1) as usize];
+
+                sum_r += r as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
+                sum_g += g as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
+                sum_b += b as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
             }
         }
-
         (sum_r.round() as u8, sum_g.round() as u8, sum_b.round() as u8)
     }
 
@@ -46,8 +51,8 @@ impl Kernel {
 
     pub fn sum(&self) -> f64 {
         let mut sum: f64 = 0.0;
-        for j in 0i32..self.n {
-            for i in 0i32..self.m {
+        for j in 0i32..self.height {
+            for i in 0i32..self.width {
                 sum += self.array[j as usize][i as usize];
             }
         }
@@ -55,8 +60,8 @@ impl Kernel {
     }
 
     pub fn convolve(&self, img: &Image, img_out: &mut Image) {
-        for y in 0i32..img.n {
-            for x in 0i32..img.m {
+        for y in 0i32..img.height {
+            for x in 0i32..img.width {
                 img_out.set_pixel_intensity(x,y,self.get_sum_at_index(x,y,img));
             }
         }
