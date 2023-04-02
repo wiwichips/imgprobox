@@ -1,13 +1,13 @@
 // Image Struct
 pub struct Image {
     array: Vec<u8>,// canvas data (1d)
-    pub height: i32,    // rows / height
     pub width: i32,    // cols / width
+    pub height: i32,    // rows / height
 }
 
 impl Image {
-    pub fn new(data: Vec<u8>, height: i32, width: i32) -> Self {
-        Image { array: data, height, width }
+    pub fn new(data: Vec<u8>, width: i32, height: i32) -> Self {
+        Image { array: data, width, height }
     }
 
     pub fn get_pixel_intensity(&self, x: i32, y: i32) -> (u8,u8,u8) {
@@ -27,7 +27,7 @@ impl Image {
     }
 
     pub fn get_pixel_index(&self, x: i32, y: i32) -> usize {
-        ((self.height * y + x) * 4) as usize
+        ((self.width * y + x) * 4) as usize
     }
 
     pub fn get_array(&self) -> &Vec<u8> {

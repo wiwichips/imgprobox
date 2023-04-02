@@ -1,16 +1,21 @@
 use crate::image::Image;
 use crate::padding::padding_zero;
 
+use web_sys::console;
+use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
+use wasm_bindgen::prelude::*;
+
+
 // Kernel Struct
 pub struct Kernel {
     array: Vec<Vec<f64>>, // actual 2d kernel
-    pub height: i32,           // rows / height
     pub width: i32,           // cols / width
+    pub height: i32,           // rows / height
 }
 
 impl Kernel {
-    pub fn new(data: Vec<Vec<f64>>, height: i32, width: i32) -> Self {
-        Kernel { array: data, height, width }
+    pub fn new(data: Vec<Vec<f64>>, width: i32, height: i32) -> Self {
+        Kernel { array: data, width, height }
     }
 
     fn get_element(&self, x: i32, y: i32) -> f64 {
@@ -27,15 +32,15 @@ impl Kernel {
         let top:  i32 = -1 * (self.height - 1) / 2;
 
         // iterate through each element in the kernel and apply it to the image
-        for j in 0i32..self.width {
-            for i in 0i32..self.height {
+        for i in 0i32..self.width {
+            for j in 0i32..self.height {
                 let (r,g,b) = pad(&img, x + i + left, y + j + top);
-                sum_r += r as f64 * self.array[(self.width - j - 1) as usize][(self.height - i - 1) as usize];
-                sum_g += g as f64 * self.array[(self.width - j - 1) as usize][(self.height - i - 1) as usize];
-                sum_b += b as f64 * self.array[(self.width - j - 1) as usize][(self.height - i - 1) as usize];
+
+                sum_r += r as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
+                sum_g += g as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
+                sum_b += b as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
             }
         }
-
         (sum_r.round() as u8, sum_g.round() as u8, sum_b.round() as u8)
     }
 

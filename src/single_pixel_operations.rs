@@ -1,4 +1,8 @@
 use crate::image::Image;
+use web_sys::console;
+use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
+use wasm_bindgen::prelude::*;
+
 
 // generic single pixel operation -----------------------------------
 // Define a new trait for the single pixel operation
@@ -18,6 +22,11 @@ where
 
 // Modify the apply_spo_chain function to accept Vec<Box<dyn SinglePixelOperation>>
 pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperation>>) {
+    let js: JsValue = img.width.into();
+    console::log_2(&"width\t".into(), &js);
+    let js: JsValue = img.height.into();
+    console::log_2(&"height\t".into(), &js);
+
     for x in 0i32..img.width {
         for y in 0i32..img.height {
             let (mut r, mut g, mut b) = img.get_pixel_intensity(x, y);
