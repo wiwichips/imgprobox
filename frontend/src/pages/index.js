@@ -228,7 +228,6 @@ return (
           <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
         </div>
       </div>
-      <div className="col-4 bg-primary"></div>
     </div>
     <div className="row full-height">
       <div className="col-4 bg-success d-flex align-items-center justify-content-center">
@@ -238,7 +237,6 @@ return (
         <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
         <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
       </div>
-      <div className="col-4 bg-success"></div>
     </div>
   </div>
 );
