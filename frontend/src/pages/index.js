@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import init, { draw } from '../../../pkg/without_a_bundler'; // Replace with the correct import
+import ExpandableSection from './components/ExpandableSection';
+import Padding from './components/Padding';
+import GeometricTransformations from './components/GeometricTransformations';
+import SinglePixelOperations from './components/SinglePixelOperations';
 
 function App() {
   const canvasRef = useRef();
@@ -11,6 +15,45 @@ function App() {
 
   const handleWasmDrawRef = useRef();
 
+  // padding
+  const [selectedPaddingType, setSelectedPaddingType] = useState('reflected');
+
+  const handlePaddingTypeChange = (paddingType) => {
+    setSelectedPaddingType(paddingType);
+    console.log(paddingType);
+  };
+
+  // geometric transformations
+  const [transformations, setTransformations] = useState({
+    mirror: false,
+    flip: false,
+    rotate: 0,
+    scale: 100,
+    scalingMethod: 'nearest',
+  });
+
+  const handleTransformationsChange = (newTransformations) => {
+    setTransformations(newTransformations);
+    console.log(transformations);
+  };
+
+  // single pixel operations
+  const [singlePixelOperations, setSinglePixelOperations] = useState({
+    inverse: false,
+    threshold: false,
+    thresholdValue: 0,
+    linearMapping: false,
+    linearA: 1,
+    linearB: 0,
+    powerLaw: false,
+    gamma: 1,
+    equalize: false,
+  });
+
+  const handleSinglePixelOperationsChange = (newOperations) => {
+    setSinglePixelOperations(newOperations);
+    console.log(newOperations);
+  };
 
   const [convolutionDemo, setConvolutionDemo] = useState(false);
   const [powerLawMappingDemo, setPowerLawMappingDemo] = useState(false);
@@ -34,21 +77,6 @@ function App() {
     setStackedDemo(e.target.checked);
   };
 
-  /*
-  function handleWasmDraw(canvasObj, canvasWidth, canvasHeight) {
-    const options = [
-        convolutionDemo ? 'convolutionDemo' : null,
-        powerLawMappingDemo ? 'powerLawMappingDemo' : null,
-        inverseDemo ? 'inverseDemo' : null,
-        stackedDemo ? 'stackedDemo' : null,
-      ].filter((option) => option !== null);
-
-    console.log(options);
-
-    // Call the draw function from wasm
-    draw(canvasObj, canvasWidth, canvasHeight, options);
-  }
-  */
   const handleWasmDraw = useCallback((canvasObj, canvasWidth, canvasHeight) => {
     const options = [
       convolutionDemo ? 'convolutionDemo' : null,
@@ -56,8 +84,6 @@ function App() {
       inverseDemo ? 'inverseDemo' : null,
       stackedDemo ? 'stackedDemo' : null,
     ].filter((option) => option !== null);
-
-    //console.log(options);
 
     // Call the draw function from wasm
     draw(canvasObj, canvasWidth, canvasHeight, options);
@@ -146,70 +172,91 @@ function App() {
     };
   }, []);
 
+  const selectedOptions = (
+    <div className="options-column">
+      <div>
+        <input
+          className="form-check-input"
+          type="checkbox"
+          value={convolutionDemo}
+          onChange={(e) => setConvolutionDemo(e.target.checked)}
+          id="convolutionDemo"
+        />
+        <label className="form-check-label" htmlFor="convolutionDemo">
+          Convolution Demo
+        </label>
+      </div>
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          value={powerLawMappingDemo}
+          onChange={(e) => setPowerLawMappingDemo(e.target.checked)}
+          id="powerLawMappingDemo"
+        />
+        <label className="form-check-label" htmlFor="powerLawMappingDemo">
+          Power Law Mapping Demo
+        </label>
+      </div>
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          value={inverseDemo}
+          onChange={(e) => setInverseDemo(e.target.checked)}
+          id="inverseDemo"
+        />
+        <label className="form-check-label" htmlFor="inverseDemo">
+          Inverse Demo
+        </label>
+      </div>
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          value={stackedDemo}
+          onChange={(e) => setStackedDemo(e.target.checked)}
+          id="stackedDemo"
+        />
+        <label className="form-check-label" htmlFor="stackedDemo">
+          Stacked Demo
+        </label>
+      </div>
+      <div className="options-row">
+        <ExpandableSection title="Padding">
+          <Padding
+            onPaddingTypeChange={handlePaddingTypeChange}
+          />
+        </ExpandableSection>
+        <ExpandableSection title="Geometric Spatial Transformations">
+          <GeometricTransformations
+            onTransformationsChange={handleTransformationsChange}
+          />
+        </ExpandableSection>
+        <ExpandableSection title="Single Pixel Operations">
+          <SinglePixelOperations
+            onSinglePixelOperationsChange={handleSinglePixelOperationsChange}
+          />
+        </ExpandableSection>
+      </div>
+
+    </div>
+  );
+
   return (
     <div className="app-container">
       <h1>IMGPROBOX</h1>
       <div className="content">
         <div>
-          <div>
-          <p>less talk1</p>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value={convolutionDemo}
-              onChange={(e) => setConvolutionDemo(e.target.checked)}
-              id="convolutionDemo"
-            />
-            <label className="form-check-label" htmlFor="convolutionDemo">
-              Convolution Demo
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value={powerLawMappingDemo}
-              onChange={(e) => setPowerLawMappingDemo(e.target.checked)}
-              id="powerLawMappingDemo"
-            />
-            <label className="form-check-label" htmlFor="powerLawMappingDemo">
-              Power Law Mapping Demo
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value={inverseDemo}
-              onChange={(e) => setInverseDemo(e.target.checked)}
-              id="inverseDemo"
-            />
-            <label className="form-check-label" htmlFor="inverseDemo">
-              Inverse Demo
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value={stackedDemo}
-              onChange={(e) => setStackedDemo(e.target.checked)}
-              id="stackedDemo"
-            />
-            <label className="form-check-label" htmlFor="stackedDemo">
-              Stacked Demo
-            </label>
-          </div>
+          {selectedOptions}
         </div>
         <div className="options-column">
           <div className="options-row">
-            <p>less talk2</p>
-              <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+            <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
           </div>
           <div className="options-row">
           </div>
           <div className="options-row">
-            <p>less talk4</p>
             <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
             <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
             <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
@@ -222,4 +269,3 @@ function App() {
 }
 
 export default App;
-
