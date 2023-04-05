@@ -1,23 +1,19 @@
-# Without a Bundler
+# IMGPROBOX 
+IMGPROBOX is an online image processing toolbox written in Rust + WASM with a React frontend.
 
-[View documentation for this example online][dox]
+## User Manual
 
-[dox]: https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
+TODO
 
-You can build the example locally with:
+## Deploy instructions
+Run the `deploy.sh` script in the root directory of this repository. Then serve the files from the `frontend/out` folder.
+- `./deploy.sh`
+- `ls frontend/out/`
 
-```
-$ wasm-pack build --target web
-```
+## Testing instructions
+Running locally
+- To run IMGPROBOX locally, just run the `./run.sh` script.
 
-Then serve this directory in your favourite webserver and navigate to `host:port`
-to open the index.html in your browser:
+Unit Tests
+- Currently there are no unit tests. If you would like to add some, please make a pull request.
 
-```
-# static server from https://crates.io/crates/https
-http
-
-# or use python
-python2 -m SimpleHTTPServer
-python3 -m http.server
-```
