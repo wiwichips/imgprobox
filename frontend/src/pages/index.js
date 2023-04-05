@@ -146,100 +146,78 @@ function App() {
     };
   }, []);
 
-/*
-return (
-  <div className="container-fluid full-height">
-    <div className="row full-height">
-      <div className="col-4 bg-primary"></div>
-      <div className="col-4 bg-secondary">
-        <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
-        <label>Image File:</label>
-        <br />
-        <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%' }}></canvas>
-      </div>
-      <div className="col-4 bg-primary"></div>
-    </div>
-    <div className="row full-height">
-      <div className="col-4 bg-success"></div>
-      <div className="col-4 bg-info">
-        <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
-        <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
-      </div>
-      <div className="col-4 bg-success"></div>
-    </div>
-  </div>
-);
-*/
-return (
-  <div className="container-fluid full-height">
-    <div className="row full-height">
-    <div className="col-4 bg-primary d-flex flex-column align-items-center justify-content-center">
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={convolutionDemo}
-          onChange={(e) => setConvolutionDemo(e.target.checked)}
-          id="convolutionDemo"
-        />
-        <label className="form-check-label" htmlFor="convolutionDemo">
-          Convolution Demo
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={powerLawMappingDemo}
-          onChange={(e) => setPowerLawMappingDemo(e.target.checked)}
-          id="powerLawMappingDemo"
-        />
-        <label className="form-check-label" htmlFor="powerLawMappingDemo">
-          Power Law Mapping Demo
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={inverseDemo}
-          onChange={(e) => setInverseDemo(e.target.checked)}
-          id="inverseDemo"
-        />
-        <label className="form-check-label" htmlFor="inverseDemo">
-          Inverse Demo
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={stackedDemo}
-          onChange={(e) => setStackedDemo(e.target.checked)}
-          id="stackedDemo"
-        />
-        <label className="form-check-label" htmlFor="stackedDemo">
-          Stacked Demo
-        </label>
-      </div>
-    </div>
-      <div className="col-4 bg-secondary square-cell">
-        <div className="square-content">
-          <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+  return (
+    <div className="app-container">
+      <h1>IMGPROBOX</h1>
+      <div className="content">
+        <div>
+          <div>
+          <p>less talk1</p>
+            <input
+              className="form-check-input"
+              type="checkbox"
+              value={convolutionDemo}
+              onChange={(e) => setConvolutionDemo(e.target.checked)}
+              id="convolutionDemo"
+            />
+            <label className="form-check-label" htmlFor="convolutionDemo">
+              Convolution Demo
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              value={powerLawMappingDemo}
+              onChange={(e) => setPowerLawMappingDemo(e.target.checked)}
+              id="powerLawMappingDemo"
+            />
+            <label className="form-check-label" htmlFor="powerLawMappingDemo">
+              Power Law Mapping Demo
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              value={inverseDemo}
+              onChange={(e) => setInverseDemo(e.target.checked)}
+              id="inverseDemo"
+            />
+            <label className="form-check-label" htmlFor="inverseDemo">
+              Inverse Demo
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              value={stackedDemo}
+              onChange={(e) => setStackedDemo(e.target.checked)}
+              id="stackedDemo"
+            />
+            <label className="form-check-label" htmlFor="stackedDemo">
+              Stacked Demo
+            </label>
+          </div>
+        </div>
+        <div className="options-column">
+          <div className="options-row">
+            <p>less talk2</p>
+              <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+          </div>
+          <div className="options-row">
+          </div>
+          <div className="options-row">
+            <p>less talk4</p>
+            <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
+            <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
+            <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
+          </div>
         </div>
       </div>
     </div>
-    <div className="row full-height">
-      <div className="col-4 bg-success d-flex align-items-center justify-content-center">
-        <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
-      </div>
-      <div className="col-4 bg-info">
-        <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
-        <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
-      </div>
-    </div>
-  </div>
-);
+  );
 
 }
 
