@@ -52,48 +52,20 @@ const SinglePixelOperations = ({
         <input type="number" name="thresholdValue" value={operations.thresholdValue} onChange={handleInputChange} disabled={!operations.threshold} /> ))}
       <div>
         <label>
-          <input
-            type="checkbox"
-            name="linearMapping"
-            checked={operations.linearMapping}
-            onChange={handleCheckboxChange}
-          />
+          <input type="checkbox" name="linearMapping" checked={operations.linearMapping} onChange={handleCheckboxChange}/>
           Linear mapping with a =
         </label>
-        <input
-          type="number"
-          name="linearA"
-          value={operations.linearA}
-          onChange={handleInputChange}
-          disabled={!operations.linearMapping}
-        />
+        <input type="number" name="linearA" value={operations.linearA} onChange={handleInputChange} disabled={!operations.linearMapping}/>
         and b =
-        <input
-          type="number"
-          name="linearB"
-          value={operations.linearB}
-          onChange={handleInputChange}
-          disabled={!operations.linearMapping}
-        />
+        <input type="number" name="linearB" value={operations.linearB} onChange={handleInputChange} disabled={!operations.linearMapping}/>
       </div>
       <h5>Power Law Mapping</h5>
       <div>
         <label>
-          <input
-            type="checkbox"
-            name="powerLaw"
-            checked={operations.powerLaw}
-            onChange={handleCheckboxChange}
-          />
+          <input type="checkbox" name="powerLaw" checked={operations.powerLaw} onChange={handleCheckboxChange}/>
           Gamma =
         </label>
-        <input
-          type="number"
-          name="gamma"
-          value={operations.gamma}
-          onChange={handleInputChange}
-          disabled={!operations.powerLaw}
-        />
+        <input type="number" name="gamma" value={operations.gamma} onChange={handleInputChange} disabled={!operations.powerLaw}/>
       </div>
       <h5>Histogram Equalization</h5>
       {simpleItem("checkbox", "equalize", operations.equalize, handleCheckboxChange)}
