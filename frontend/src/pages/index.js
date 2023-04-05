@@ -52,7 +52,6 @@ function App() {
 
   const handleSinglePixelOperationsChange = (newOperations) => {
     setSinglePixelOperations(newOperations);
-    console.log(newOperations);
   };
 
   const [convolutionDemo, setConvolutionDemo] = useState(false);
@@ -81,13 +80,13 @@ function App() {
     const options = [
       convolutionDemo ? 'convolutionDemo' : null,
       powerLawMappingDemo ? 'powerLawMappingDemo' : null,
-      inverseDemo ? 'inverseDemo' : null,
+      singlePixelOperations.inverse ? 'inverseDemo' : null,
       stackedDemo ? 'stackedDemo' : null,
     ].filter((option) => option !== null);
 
     // Call the draw function from wasm
     draw(canvasObj, canvasWidth, canvasHeight, options);
-  }, [convolutionDemo, powerLawMappingDemo, inverseDemo, stackedDemo]);
+  }, [convolutionDemo, powerLawMappingDemo, inverseDemo, stackedDemo, singlePixelOperations]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
