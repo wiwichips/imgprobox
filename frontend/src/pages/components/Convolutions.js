@@ -37,7 +37,8 @@ const Convolutions = ({
     if (onConvolutionsChange) {
       onConvolutionsChange({ kernel, normalize, commonKernels });
     }
-  }, [kernel, normalize, commonKernels, onConvolutionsChange]);
+    console.log("useEffect");
+  }, [kernel, normalize, commonKernels]);
 
     useEffect(() => {
       const newKernel = Array(height).fill(Array(width).fill(0)).map((row) => row.slice());
