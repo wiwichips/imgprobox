@@ -5,6 +5,7 @@ import ExpandableSection from './components/ExpandableSection';
 import Padding from './components/Padding';
 import GeometricTransformations from './components/GeometricTransformations';
 import SinglePixelOperations from './components/SinglePixelOperations';
+import Convolutions from './components/Convolutions';
 
 function App() {
   const canvasRef = useRef();
@@ -53,6 +54,24 @@ function App() {
   const handleSinglePixelOperationsChange = (newOperations) => {
     setSinglePixelOperations(newOperations);
   };
+
+  // convolutions
+    const [convolutions, setConvolutions] = useState({
+    kernel: Array(3).fill(Array(3).fill(0)),
+    normalize: false,
+    commonKernels: {
+      gaussian: false,
+      sobel: false,
+    },
+  });
+
+  const handleConvolutionsChange = (newConvolutions) => {
+    setConvolutions(newConvolutions);
+    console.log(convolutions);
+  };
+
+  const [customConvolution, setCustomConvolution] = useState(null);
+
 
   const [convolutionDemo, setConvolutionDemo] = useState(false);
   const [powerLawMappingDemo, setPowerLawMappingDemo] = useState(false);
@@ -235,6 +254,12 @@ function App() {
         <ExpandableSection title="Single Pixel Operations">
           <SinglePixelOperations
             onSinglePixelOperationsChange={handleSinglePixelOperationsChange}
+          />
+        </ExpandableSection>
+        <ExpandableSection title="Convolutions">
+          <Convolutions
+            onConvolutionsChange={handleConvolutionsChange}
+            setCustomConvolution={setCustomConvolution}
           />
         </ExpandableSection>
       </div>
