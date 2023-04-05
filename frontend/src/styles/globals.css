@@ -157,3 +157,89 @@ a {
   flex-direction: column;
   align-items: center;
 }
+
+.opt-col {
+  width: 100%;
+}
+
+.expandable-section {
+  width: 100%;
+  border: 5px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.expandable-section-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.expandable-section-header h3 {
+  margin-left: 10px;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #000;
+  transition: transform 0.3s;
+}
+
+.triangle.expanded {
+  transform: rotate(180deg);
+}
+
+.expandable-section-content {
+  padding: 10px;
+}
+
+.padding {
+  width: 100%;
+}
+
+.padding-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.radio-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.geometric-transformations {
+  width: 100%;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+}
+
+.slider-label {
+  margin-right: 10px;
+}
+
+.scale-input {
+  width: 60px;
+  margin-left: 5px;
+}
+
+.single-pixel-operations {
+  width: 100%;
+}
+
+h5 {
+  margin-bottom: 5px;
+}
+
+input[type="number"] {
+  width: 60px;
+}
+

@@ -31,39 +31,25 @@ const SinglePixelOperations = ({
     }
   }, [operations, onSinglePixelOperationsChange]);
 
+  function simpleItem(type, name, checked, onChange, text, input) {
+    return (
+       <div>
+        <label>
+          <input type={type} name={name} checked={checked} onChange={onChange} />
+          {text === undefined ? name[0].toUpperCase() + name.slice(1) : text}
+        </label>
+        {input}
+      </div>
+    );
+  }
+
   return (
     <div className="single-pixel-operations">
       <h4>Single Pixel Operations</h4>
       <h5>Linear Mappings</h5>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            name="inverse"
-            checked={operations.inverse}
-            onChange={handleCheckboxChange}
-          />
-          Inverse
-        </label>
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            name="threshold"
-            checked={operations.threshold}
-            onChange={handleCheckboxChange}
-          />
-          Threshold at u =
-        </label>
-        <input
-          type="number"
-          name="thresholdValue"
-          value={operations.thresholdValue}
-          onChange={handleInputChange}
-          disabled={!operations.threshold}
-        />
-      </div>
+      {simpleItem("checkbox", "inverse", operations.inverse, handleCheckboxChange)}
+      {simpleItem("checkbox", "threshold", operations.threshold, handleCheckboxChange, "Threshold at u = ", (
+        <input type="number" name="thresholdValue" value={operations.thresholdValue} onChange={handleInputChange} disabled={!operations.threshold} /> ))}
       <div>
         <label>
           <input
@@ -110,17 +96,7 @@ const SinglePixelOperations = ({
         />
       </div>
       <h5>Histogram Equalization</h5>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            name="equalize"
-            checked={operations.equalize}
-            onChange={handleCheckboxChange}
-          />
-          Equalize
-        </label>
-      </div>
+      {simpleItem("checkbox", "equalize", operations.equalize, handleCheckboxChange)}
     </div>
   );
 };
