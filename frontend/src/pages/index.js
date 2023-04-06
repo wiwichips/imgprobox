@@ -220,18 +220,6 @@ function App() {
         <input
           className="form-check-input"
           type="checkbox"
-          value={inverseDemo}
-          onChange={(e) => setInverseDemo(e.target.checked)}
-          id="inverseDemo"
-        />
-        <label className="form-check-label" htmlFor="inverseDemo">
-          Inverse Demo
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
           value={stackedDemo}
           onChange={(e) => setStackedDemo(e.target.checked)}
           id="stackedDemo"
@@ -269,7 +257,9 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>IMGPROBOX</h1>
+      <h1>
+        <img src='/logo.png' width="50%" height="auto" alt="IMGPROBOX"/>
+      </h1>
       <div className="content">
         <div>
           {selectedOptions}
