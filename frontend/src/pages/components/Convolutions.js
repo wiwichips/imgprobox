@@ -49,35 +49,26 @@ const Convolutions = ({
     <div className="convolutions">
       <h4>Convolutions</h4>
       <div>
-<button onClick={applyCustomConvolution}>Apply Custom Convolution</button>
-<label>
-  Width:
-  <input
-    className="show-arrows"
-    type="number"
-    min="1"
-    max="10"
-    value={width}
-    onChange={(e) => {
-      const newValue = parseInt(e.target.value) || 1;
-      setWidth(Math.min(Math.max(newValue, 1), 10));
-    }}
-  />
-</label>
-<label>
-  Height:
-  <input
-    className="show-arrows"
-    type="number"
-    min="1"
-    max="10"
-    value={height}
-    onChange={(e) => {
-      const newValue = parseInt(e.target.value) || 1;
-      setHeight(Math.min(Math.max(newValue, 1), 10));
-    }}
-  />
-</label>
+        <button onClick={applyCustomConvolution}>Apply Custom Convolution</button>
+        <label>
+          Width:
+          <input className="show-arrows" type="number" min="1" max="10" value={width}
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value) || 1;
+              setWidth(Math.min(Math.max(newValue, 1), 10));
+            }}
+          />
+
+        </label>
+        <label>
+          Height:
+          <input className="show-arrows" type="number" min="1" max="10" value={height}
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value) || 1;
+              setHeight(Math.min(Math.max(newValue, 1), 10));
+            }}
+          />
+        </label>
       </div>
       <table>
         <tbody>

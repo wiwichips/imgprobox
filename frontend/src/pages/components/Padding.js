@@ -18,27 +18,21 @@ const Padding = ({ onPaddingTypeChange }) => {
       <h4>Padding</h4>
       <div className="padding-container">
         <label className="radio-label">
-          <input
-            type="radio"
-            value="reflected"
+          <input type="radio" value="reflected"
             checked={paddingType === 'reflected'}
             onChange={handleChange}
           />
           Reflected indexing
         </label>
         <label className="radio-label">
-          <input
-            type="radio"
-            value="circular"
+          <input type="radio" value="circular"
             checked={paddingType === 'circular'}
             onChange={handleChange}
           />
           Circular indexing
         </label>
         <label className="radio-label">
-          <input
-            type="radio"
-            value="zero"
+          <input type="radio" value="zero"
             checked={paddingType === 'zero'}
             onChange={handleChange}
           />
