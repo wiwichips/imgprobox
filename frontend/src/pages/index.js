@@ -56,22 +56,16 @@ function App() {
   };
 
   // convolutions
-    const [convolutions, setConvolutions] = useState({
+  const [convolutionEnabled, setConvlutionEnabled] = useState(false);
+  const [convolutions, setConvolutions] = useState({
     kernel: Array(3).fill(Array(3).fill(0)),
     normalize: false,
-    commonKernels: {
-      gaussian: false,
-      sobel: false,
-    },
   });
 
   const handleConvolutionsChange = (newConvolutions) => {
     setConvolutions(newConvolutions);
-    console.log(convolutions);
+    console.log(convolutionEnabled, newConvolutions);
   };
-
-  const [customConvolution, setCustomConvolution] = useState(null);
-
 
   const [convolutionDemo, setConvolutionDemo] = useState(false);
   const [powerLawMappingDemo, setPowerLawMappingDemo] = useState(false);
@@ -247,7 +241,7 @@ function App() {
         <ExpandableSection title="Convolutions">
           <Convolutions
             onConvolutionsChange={handleConvolutionsChange}
-            setCustomConvolution={setCustomConvolution}
+            setCustomConvolution={setConvlutionEnabled}
           />
         </ExpandableSection>
       </div>
