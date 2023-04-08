@@ -104,9 +104,11 @@ const Convolutions = ({
           Enable
         </label>
       </div>
-
       <div>
-        <button onClick={applyCustomConvolution}>Apply Custom Convolution</button>
+        <button onClick={applyCustomConvolution}>Set Kernel</button>
+      </div>
+      <h4>Kernel Display</h4>
+      <div>
         <label>
           Width:
           <input className="show-arrows" type="number" min="1" max="10" value={width}
@@ -163,7 +165,7 @@ const Convolutions = ({
           Normalize
         </label>
       </div>
-      <h5>Common Kernels</h5>
+      <h5>Pre-built Kernels</h5>
       <div>
         <label>
           <input
