@@ -65,52 +65,11 @@ const Convolutions = ({
   const [enabled, setEnabled] = useState(false);
   const [normalize, setNormalize] = useState(true);
   const [checkedKernel, setCheckedKernel] = useState("custom");
-  const [applyConvolution, setApplyConvolution] = useState(false);
 
   const updateKernelValue = (row, col, value) => {
     const newKernel = [...kernel];
     newKernel[row][col] = parseFloat(value);
     setKernel(newKernel);
-  };
-
-  // is this deprectaed?
-  const handleKernelSizeChange = () => {
-    const newKernel = Array(height).fill(Array(width).fill(0));
-    setKernel(newKernel);
-  };
-
-  const handleCommonKernelChange = (event) => {
-    const kernelType = event.target.value;
-    setCheckedKernel(kernelType);
-
-    if (kernelType == "gaussian") {
-      setKernel([
-        [1, 2, 1],
-        [2, 4, 2],
-        [1, 2, 1],
-      ]);
-      setNormalize(true);
-    }
-    
-    else if (kernelType == "sobel") {
-      setKernel([
-        [1, 0, -1],
-        [2, 0, -2],
-        [1, 0, -1],
-      ]);
-      setNormalize(false);
-    } 
-
-    else if (kernelType == "custom") {
-      setKernel(
-        Array.from({ length: height }, () => Array.from({ length: width }, () => 0))
-      );
-      setNormalize(false);
-    }
-    
-    else {
-      console.log("ERROR: invalid checkedKernel: ", checkedKernel);
-    }
   };
 
   const applyCustomConvolution = () => {
@@ -119,13 +78,6 @@ const Convolutions = ({
       normalize: normalize,
     };
     onConvolutionsChange(newConvolution);
-  };
-
-  const handleApplyCustomConvolutionChange = (event) => {
-    setApplyConvolution(event.target.checked);
-    if (event.target.checked) {
-      applyCustomConvolution();
-    }
   };
 
   const applyEnabledConvolutions = (event) => {
