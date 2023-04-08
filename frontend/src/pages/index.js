@@ -67,39 +67,40 @@ function App() {
     console.log(convolutionEnabled, newConvolutions);
   };
 
-  const [convolutionDemo, setConvolutionDemo] = useState(false);
   const [powerLawMappingDemo, setPowerLawMappingDemo] = useState(false);
-  const [inverseDemo, setInverseDemo] = useState(false);
   const [stackedDemo, setStackedDemo] = useState(false);
-
-  // The corresponding onChange handlers for the checkboxes
-  const handleConvolutionDemoChange = (e) => {
-    setConvolutionDemo(e.target.checked);
-  };
-
-  const handlePowerLawMappingDemoChange = (e) => {
-    setPowerLawMappingDemo(e.target.checked);
-  };
-
-  const handleInverseDemoChange = (e) => {
-    setInverseDemo(e.target.checked);
-  };
-
-  const handleStackedDemoChange = (e) => {
-    setStackedDemo(e.target.checked);
-  };
 
   const handleWasmDraw = useCallback((canvasObj, canvasWidth, canvasHeight) => {
     const options = [
-      convolutionDemo ? 'convolutionDemo' : null,
+      convolutionEnabled ? 'convolutionDemo' : null,
       powerLawMappingDemo ? 'powerLawMappingDemo' : null,
       singlePixelOperations.inverse ? 'inverseDemo' : null,
       stackedDemo ? 'stackedDemo' : null,
     ].filter((option) => option !== null);
 
     // Call the draw function from wasm
-    draw(canvasObj, canvasWidth, canvasHeight, options);
-  }, [convolutionDemo, powerLawMappingDemo, inverseDemo, stackedDemo, singlePixelOperations]);
+    let kernel = convolutions.kernel;
+    if (convolutions.normalize) {
+      const sum = kernel.reduce((acc, row) => acc + row.reduce((acc, val) => acc + val, 0), 0);
+      kernel = kernel.map((row) => row.map((val) => val / sum));
+    }
+
+    const spo_array = [];
+    if (singlePixelOperations.inverse) {
+      spo_array.push({op_type: 'linear', a: -1, b: 255});
+    }
+    if (singlePixelOperations.threshold) {
+      spo_array.push({op_type: 'threshold', a: singlePixelOperations.thresholdValue, b: 0});
+    } if (singlePixelOperations.linearMapping) {
+      spo_array.push({op_type: 'linear', a: singlePixelOperations.linearA, b: singlePixelOperations.linearB});
+    } if (singlePixelOperations.powerLaw) {
+      spo_array.push({op_type: 'powerLaw', a: singlePixelOperations.gamma, b: 0});
+    } if (singlePixelOperations.equalize) {
+      spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
+    }
+
+    draw(canvasObj, canvasWidth, canvasHeight, options, kernel, spo_array);
+  }, [powerLawMappingDemo, stackedDemo, singlePixelOperations, convolutions]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
@@ -186,18 +187,6 @@ function App() {
 
   const selectedOptions = (
     <div className="options-column">
-      <div>
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={convolutionDemo}
-          onChange={(e) => setConvolutionDemo(e.target.checked)}
-          id="convolutionDemo"
-        />
-        <label className="form-check-label" htmlFor="convolutionDemo">
-          Convolution Demo
-        </label>
-      </div>
       <div className="form-check">
         <input
           className="form-check-input"
@@ -252,7 +241,7 @@ function App() {
   return (
     <div className="app-container">
       <h1>
-        <img src='/logo.png' width="50%" height="auto" alt="IMGPROBOX"/>
+        <img src='./logo.png' width="50%" height="auto" alt="IMGPROBOX"/>
       </h1>
       <div className="content">
         <div>

@@ -118,12 +118,10 @@ pub fn generate_power_mapping(gamma: f64) -> impl Fn(u8) -> u8 {
     let y = gamma;
 
     // Precompute the lookup table
-    /**
-        base.powf is really slow... so calculating it each time for
-        every pixel in an image takes a long time. Therefore its
-        useful to precalculate all possible power law mappings for
-        the inputted gamma into a table that can be accessed.
-    **/
+    //  base.powf is really slow... so calculating it each time for
+    //  every pixel in an image takes a long time. Therefore its
+    //  useful to precalculate all possible power law mappings for
+    //  the inputted gamma into a table that can be accessed.
     let lookup_table: Vec<u8> = (0..256)
         .map(|intensity| {
             let base: f64 = intensity as f64 / (l - 1.0);
