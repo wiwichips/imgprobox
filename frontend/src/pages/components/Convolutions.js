@@ -1,11 +1,64 @@
 import React, { useState, useEffect } from 'react';
 
+const prebuiltKernels = {
+  identity: {
+    kernel: [
+      [1],
+    ],
+    size: 1,
+    normalize: false,
+  },
+  gaussian: {
+    kernel: [
+      [1, 2, 1],
+      [2, 4, 2],
+      [1, 2, 1],
+    ],
+    size: 3,
+    normalize: true,
+  },
+  gaussian_5x5: {
+    kernel: [
+      [1, 4, 6, 4, 1],
+      [4, 16, 24, 16, 4],
+      [6, 24, 36, 24, 6],
+      [4, 16, 24, 16, 4],
+      [1, 4, 6, 4, 1],
+    ],
+    size: 5,
+    normalize: true,
+  },
+  laplacian: {
+    kernel: [
+      [1, 1, 1],
+      [1, -8, 1],
+      [1, 1, 1],
+    ],
+    size: 3,
+    normalize: false,
+  },
+  laplacian_of_gaussian: {
+    kernel: [
+      [0, 0, -1, 0, 0],
+      [0, -1, -2, -1, 0],
+      [-1, -2, 16, -2, -1],
+      [0, -1, -2, -1, 0],
+      [0, 0, -1, 0, 0],
+    ],
+    size: 5,
+    normalize: false,
+  }
+};
+
 const Convolutions = ({
   onConvolutionsChange,
   setCustomConvolution,
 }) => {
   const [width, setWidth] = useState(3);
   const [height, setHeight] = useState(3);
+  const [manualWidth, setManualWidth] = useState(3);
+  const [manualHeight, setManualHeight] = useState(3);
+
   const [kernel, setKernel] = useState(
     Array.from({ length: height }, () => Array.from({ length: width }, () => 0))
   );
@@ -79,8 +132,6 @@ const Convolutions = ({
     setCustomConvolution(event.target.checked);
     setEnabled(event.target.checked);
   };
-    
-
 
   useState(() => {
     console.log('!!! + end of useEffect for onConvolutionsChange:', kernel[0])
@@ -89,7 +140,40 @@ const Convolutions = ({
   useEffect(() => {
     const newKernel = Array(height).fill(Array(width).fill(0)).map((row) => row.slice());
     setKernel(newKernel);
-  }, [width, height]);
+  }, [manualWidth, manualHeight]);
+
+  const pbj = function prebuiltKernelJsx () {
+    const kernelJsx = [];
+    for (const [name, kernel] of Object.entries(prebuiltKernels)) {
+      kernelJsx.push (
+        <div key={name}>
+          <label>
+            <input
+              type="radio"
+              value={name}
+              checked={checkedKernel === name}
+              onChange={function (e) {
+                //handleCommonKernelChange(e);
+                if (kernel.normalize != normalize) {
+                  setNormalize(kernel.normalize);
+                }
+                if (kernel.width != width) {
+                  setWidth(kernel.size);
+                }
+                if (kernel.height != height) {
+                  setHeight(kernel.size);
+                }
+                setKernel(kernel.kernel);
+                setCheckedKernel(name);
+              }}
+            />
+            {name}
+          </label>
+        </div>
+      )
+    }
+    return kernelJsx;
+  }
 
   return (
     <div className="convolutions">
@@ -114,7 +198,9 @@ const Convolutions = ({
           <input className="show-arrows" type="number" min="1" max="10" value={width}
             onChange={(e) => {
               const newValue = parseInt(e.target.value) || 1;
-              setWidth(Math.min(Math.max(newValue, 1), 10));
+              const newWidth = Math.min(Math.max(newValue, 1), 10);
+              setWidth(newWidth);
+              setManualWidth(newWidth);
             }}
           />
 
@@ -124,7 +210,9 @@ const Convolutions = ({
           <input className="show-arrows" type="number" min="1" max="10" value={height}
             onChange={(e) => {
               const newValue = parseInt(e.target.value) || 1;
-              setHeight(Math.min(Math.max(newValue, 1), 10));
+              const newHeight = Math.min(Math.max(newValue, 1), 10);
+              setHeight(newHeight);
+              setManualHeight(newHeight);
             }}
           />
         </label>
@@ -166,37 +254,7 @@ const Convolutions = ({
         </label>
       </div>
       <h5>Pre-built Kernels</h5>
-      <div>
-        <label>
-          <input
-            type="radio" value="custom"
-            checked={checkedKernel == "custom"}
-            onChange={handleCommonKernelChange}
-          />
-          Custom
-        </label>
-      </div>
-      <div>
-        <label>
-          <input
-            type="radio" value="gaussian"
-            checked={checkedKernel == "gaussian"}
-            onChange={handleCommonKernelChange}
-          />
-          Gaussian
-        </label>
-      </div>
-      <div>
-        <label>
-          <input
-            type="radio" value="sobel"
-            checked={checkedKernel == "sobel"}
-            onChange={handleCommonKernelChange}
-          />
-          Sobel
-        </label>
-      </div>
-      {/* Add more common kernels as needed */}
+      {pbj()}
     </div>
   );
 };
