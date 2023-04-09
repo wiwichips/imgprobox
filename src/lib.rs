@@ -28,7 +28,9 @@ pub fn draw(
     height: u32,
     options: Array,
     custom_convolution: Array,
-    spo_array_options: Array
+    spo_array_options: Array,
+    rotate_theta: f64,
+    scale_factor: f64,
 ) -> Result<(), JsValue> {
     let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
     let clamped_data = current_image.data();
@@ -66,6 +68,14 @@ pub fn draw(
 
     //flip_horizontal(&mut my_image);
     //flip_vertical(&mut my_image);
+    if rotate_theta != 0.0 || rotate_theta != 360.0 {
+        rotate(&mut my_image, rotate_theta);
+    }
+
+    if scale_factor != 1.0 {
+        // BROKEN
+        scale_bilinear(&mut my_image, scale_factor);
+    }
 
     // do convolutions after 
     if doConv {

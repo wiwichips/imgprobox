@@ -35,7 +35,6 @@ function App() {
 
   const handleTransformationsChange = (newTransformations) => {
     setTransformations(newTransformations);
-    console.log(transformations);
   };
 
   // single pixel operations
@@ -64,18 +63,12 @@ function App() {
 
   const handleConvolutionsChange = (newConvolutions) => {
     setConvolutions(newConvolutions);
-    console.log(convolutionEnabled, newConvolutions);
   };
 
-  const [powerLawMappingDemo, setPowerLawMappingDemo] = useState(false);
-  const [stackedDemo, setStackedDemo] = useState(false);
 
   const handleWasmDraw = useCallback((canvasObj, canvasWidth, canvasHeight) => {
     const options = [
       convolutionEnabled ? 'convolutionDemo' : null,
-      powerLawMappingDemo ? 'powerLawMappingDemo' : null,
-      singlePixelOperations.inverse ? 'inverseDemo' : null,
-      stackedDemo ? 'stackedDemo' : null,
     ].filter((option) => option !== null);
 
     // Call the draw function from wasm
@@ -99,8 +92,8 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
-    draw(canvasObj, canvasWidth, canvasHeight, options, kernel, spo_array);
-  }, [powerLawMappingDemo, stackedDemo, singlePixelOperations, convolutions]);
+    draw(canvasObj, canvasWidth, canvasHeight, options, kernel, spo_array, transformations.rotate, transformations.scale/100);
+  }, [singlePixelOperations, convolutions, transformations]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
@@ -139,8 +132,8 @@ function App() {
       fileInput.addEventListener('change', handleImage, false);
 
       function processFrame() {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth === 0 ? 640 : video.videoWidth;
+        canvas.height = video.videoHeight === 0 ? 480 : video.videoHeight;
 
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -148,8 +141,8 @@ function App() {
         image.src = canvas.toDataURL();
         canvas.getContext('2d').drawImage(image, 0, 0);
 
-        //draw(canvas.getContext('2d'), 640, 640);
-        handleWasmDrawRef.current(canvas.getContext('2d'), 640, 640);
+        console.log(video.videoWidth + " and " + video.videoHeight)
+        handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height);
 
         if (videoOn) {
           window.requestAnimationFrame(processFrame);
@@ -187,30 +180,6 @@ function App() {
 
   const selectedOptions = (
     <div className="options-column">
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={powerLawMappingDemo}
-          onChange={(e) => setPowerLawMappingDemo(e.target.checked)}
-          id="powerLawMappingDemo"
-        />
-        <label className="form-check-label" htmlFor="powerLawMappingDemo">
-          Power Law Mapping Demo
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          value={stackedDemo}
-          onChange={(e) => setStackedDemo(e.target.checked)}
-          id="stackedDemo"
-        />
-        <label className="form-check-label" htmlFor="stackedDemo">
-          Stacked Demo
-        </label>
-      </div>
       <div className="options-row">
         <ExpandableSection title="Padding">
           <Padding
