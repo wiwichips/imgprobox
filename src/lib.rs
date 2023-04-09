@@ -16,6 +16,9 @@ use convolution::Kernel;
 mod single_pixel_operations;
 use single_pixel_operations::*;
 
+mod geometric_spatial_transformations;
+use geometric_spatial_transformations::*;
+
 //mod binary_spo;
 
 #[wasm_bindgen]
@@ -60,6 +63,9 @@ pub fn draw(
     }
 
     apply_spo_chain(&mut my_image, spo_array);
+
+    //flip_horizontal(&mut my_image);
+    //flip_vertical(&mut my_image);
 
     // do convolutions after 
     if doConv {
@@ -128,31 +134,4 @@ fn js_2d_array_to_vec(js_array: &Array) -> Vec<Vec<f64>> {
     }
     vec
 }
-
-fn test_spo_thresh(img: &mut Image) {
-    let spo = generate_threshold_mapping(50);
-    apply_spo(img, spo);
-}
-
-fn test_spo_chain(img: &mut Image) {
-    let spo = single_to_tri(generate_linear_mapping(-1, 255));
-    let spo_pm = single_to_tri(generate_power_mapping(5.0)); 
-    let spo_g = fn_to_opaque(grayscale);
-
-    let mut spo_array: Vec<Box<dyn SinglePixelOperation>> = vec![];
-    spo_array.push(Box::new(spo));
-    spo_array.push(Box::new(spo_pm));
-    spo_array.push(Box::new(spo_g));
-
-    apply_spo_chain(img, spo_array);
-}
-
-fn test_gray_scale(img: &mut Image) {
-    apply_multi_channel_spo(img, grayscale);
-}
-
-fn test_power_law(img: &mut Image) {
-    power_law_mapping(img, 0.5);
-}
-
 
