@@ -13,11 +13,13 @@ import Tabs from 'react-bootstrap/Tabs';
 function App() {
   const canvasRef = useRef();
   const canvasDrawRef = useRef();
+  const canvasImgRef = useRef();
   const videoRef = useRef();
   const fileInputRef = useRef();
   const buttonRef = useRef();
   const hiddenFileInputRef = useRef(); // delete later
   let videoOn = false;
+  const cachedImageRef = useRef();
 
   const [activeTab, setActiveTab] = useState("image");
 
@@ -76,7 +78,6 @@ function App() {
     console.log(newFiltering);
   };
 
-
   const handleWasmDraw = useCallback((canvasObj, canvasWidth, canvasHeight) => {
     const options = [
       convolutionEnabled ? 'convolutionDemo' : null,
@@ -110,31 +111,47 @@ function App() {
     handleWasmDrawRef.current = handleWasmDraw;
   }, [handleWasmDraw]);
 
+  const handleReDrawImage = useCallback(() => {
+    if (!cachedImageRef.current) {
+      return;
+    }
+
+    const canvas = canvasImgRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(cachedImageRef.current, 0, 0);
+
+    const canvasDraw = canvasDrawRef.current;
+    if (canvasDraw.getContext('2d')['drawImage'] != undefined) {
+      canvasDraw.width = canvas.width;
+      canvasDraw.height = canvas.height;
+      canvasDraw.getContext('2d').drawImage(canvas, 0, 0);
+      handleWasmDrawRef.current(canvasDraw.getContext('2d'), canvasDraw.width, canvasDraw.height);
+    }
+  }, [canvasImgRef, canvasDrawRef, handleWasmDrawRef]);
+
   function handleImage(e) {
     var reader = new FileReader();
     const img = new Image();
     img.onload = () => {
       // Set canvas dimensions to match the uploaded image
-      console.log("JS --> " + img.width + " and " + img.height);
+      const canvas = canvasImgRef.current;
       canvas.width = img.width;
       canvas.height = img.height;
 
       canvas.getContext('2d').drawImage(img, 0, 0);
-      //draw(canvas.getContext('2d'), canvas.width, canvas.height);
-
-      const canvasDraw = canvasDrawRef.current;
-      if (canvasDraw.getContext('2d')['drawImage'] != undefined) {
-        canvasDraw.width = canvas.width;
-        canvasDraw.height = canvas.height;
-        canvasDraw.getContext('2d').drawImage(canvas, 0, 0);
-        handleWasmDrawRef.current(canvasDraw.getContext('2d'), canvas.width, canvas.height);
-      }
+      cachedImageRef.current = img; // Cache the image
+      handleReDrawImage();
     };
     reader.onload = function (event) {
       img.src = event.target.result;
     };
     reader.readAsDataURL(e.target.files[0]);
   }
+
+  // Add a new useEffect to listen for changes in singlePixelOperations, convolutions, and transformations
+  useEffect(() => {
+    handleReDrawImage();
+  }, [singlePixelOperations, convolutions, transformations, handleReDrawImage]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -159,7 +176,6 @@ function App() {
         image.src = canvas.toDataURL();
         canvas.getContext('2d').drawImage(image, 0, 0);
 
-        console.log(video.videoWidth + " and " + video.videoHeight)
         handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height);
 
         if (videoOn) {
@@ -198,12 +214,11 @@ function App() {
 
   return (
     <div className="app-container">
+      <h1>
+        <img src='./logo.png' width="100%" height="auto" alt="IMGPROBOX"/>
+      </h1>
       <div className="content">
         <div className="options-column">
-          <h1>
-            <img src='./logo.png' width="100%" height="auto" alt="IMGPROBOX"/>
-          </h1>
-
           <div className="options-row">
             <ExpandableSection title="Padding">
               <Padding
@@ -245,15 +260,16 @@ function App() {
             <Tab eventKey="image" title="Image" className='coloredTab'>
               <div className="image-column">
                 <div>
-                  <button ref={buttonRef} className="btn btn-primary mt-2 hideMe">Switch webcam</button>
-                </div>
-                <div>
                   <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" className={activeTab === "webcam" ? "hideMe" : ""}/>
                 </div>
                 <canvas ref={canvasDrawRef} id="canvasUpdate" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
-                <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                <canvas ref={canvasImgRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
                 <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} className={activeTab === "webcam" ? "": "hideMe"}></video>
               </div>
+              <div>
+                <button ref={buttonRef} className="btn btn-primary mt-2 hideMe">Switch webcam</button>
+              </div>
+
             </Tab> 
             <Tab eventKey="webcam" title="Webcam" className='coloredTab'>
               <div className="image-column">
