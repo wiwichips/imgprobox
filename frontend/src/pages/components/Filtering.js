@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 const Filtering = ({ onFilteringChange }) => {
   const [salt, setSalt] = useState(0);
   const [pepper, setPepper] = useState(0);
-  const [filterType, setFilterType] = useState('median');
-  const [neighborhoodType, setNeighborhoodType] = useState('cityBlock');
+  const [filterType, setFilterType] = useState('none');
+  const [neighborhoodType, setNeighborhoodType] = useState('chessboard');
   const [neighborhoodSize, setNeighborhoodSize] = useState(1);
 
   const handleFilterChange = () => {
@@ -59,6 +59,20 @@ const Filtering = ({ onFilteringChange }) => {
 
       <div>
         <h5>Filtering</h5>
+        <div>
+            <label>
+            <input
+                type="radio"
+                value="max"
+                checked={filterType === 'none'}
+                onChange={() => {
+                    setFilterType('none');
+                    handleFilterChange();
+                }}
+            />
+            None
+            </label>
+        </div>
         <div>
             <label>
             <input
