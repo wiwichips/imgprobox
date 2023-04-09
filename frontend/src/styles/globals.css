@@ -139,10 +139,9 @@ a {
 }
 
 .image-column {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .options-column {
@@ -155,7 +154,7 @@ a {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Change from 'center' to 'flex-start' */
 }
 
 .opt-col {
@@ -239,10 +238,6 @@ h5 {
   margin-bottom: 5px;
 }
 
-input[type="number"] {
-  width: 60px;
-}
-
 .convolutions {
   width: 100%;
 }
@@ -261,33 +256,6 @@ input[type='number'] {
   width: 60px;
 }
 
-h5 {
-  margin-bottom: 5px;
-}
-
-/* Hide arrows for all number inputs by default */
-/*
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-*/
-
-/*
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-*/
-
-/* Reset default behavior for all number inputs */
-/*
-input[type="number"].show-arrows::-webkit-inner-spin-button,
-input[type="number"].show-arrows::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button;
-}
-*/
-
-input[type="number"].show-arrows {
-  -moz-appearance: number-input;
+.options-column {
+  width: 50%;
 }

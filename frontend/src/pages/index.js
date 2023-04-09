@@ -6,6 +6,7 @@ import Padding from './components/Padding';
 import GeometricTransformations from './components/GeometricTransformations';
 import SinglePixelOperations from './components/SinglePixelOperations';
 import Convolutions from './components/Convolutions';
+import Filtering from './components/Filtering';
 
 function App() {
   const canvasRef = useRef();
@@ -63,6 +64,10 @@ function App() {
 
   const handleConvolutionsChange = (newConvolutions) => {
     setConvolutions(newConvolutions);
+  };
+
+  const handleFilteringChange = (newFiltering) => {
+    console.log(newFiltering);
   };
 
 
@@ -178,54 +183,56 @@ function App() {
     };
   }, []);
 
-  const selectedOptions = (
-    <div className="options-column">
-      <div className="options-row">
-        <ExpandableSection title="Padding">
-          <Padding
-            onPaddingTypeChange={handlePaddingTypeChange}
-          />
-        </ExpandableSection>
-        <ExpandableSection title="Geometric Spatial Transformations">
-          <GeometricTransformations
-            onTransformationsChange={handleTransformationsChange}
-          />
-        </ExpandableSection>
-        <ExpandableSection title="Single Pixel Operations">
-          <SinglePixelOperations
-            onSinglePixelOperationsChange={handleSinglePixelOperationsChange}
-          />
-        </ExpandableSection>
-        <ExpandableSection title="Convolutions">
-          <Convolutions
-            onConvolutionsChange={handleConvolutionsChange}
-            setCustomConvolution={setConvlutionEnabled}
-          />
-        </ExpandableSection>
-      </div>
-
-    </div>
-  );
-
   return (
     <div className="app-container">
-      <h1>
-        <img src='./logo.png' width="50%" height="auto" alt="IMGPROBOX"/>
-      </h1>
       <div className="content">
-        <div>
-          {selectedOptions}
+        <div className="options-column">
+          <h1>
+            <img src='./logo.png' width="100%" height="auto" alt="IMGPROBOX"/>
+          </h1>
+
+          <div className="options-row">
+            <ExpandableSection title="Padding">
+              <Padding
+                onPaddingTypeChange={handlePaddingTypeChange}
+              />
+            </ExpandableSection>
+            <ExpandableSection title="Spatial Transformations">
+              <GeometricTransformations
+                onTransformationsChange={handleTransformationsChange}
+              />
+            </ExpandableSection>
+            <ExpandableSection title="Single Pixel Operations">
+              <SinglePixelOperations
+                onSinglePixelOperationsChange={handleSinglePixelOperationsChange}
+              />
+            </ExpandableSection>
+            <ExpandableSection title="Convolutions">
+              <Convolutions
+                onConvolutionsChange={handleConvolutionsChange}
+                setCustomConvolution={setConvlutionEnabled}
+              />
+            </ExpandableSection>
+            <ExpandableSection title="Filtering">
+              <Filtering
+                onFilteringChange={handleFilteringChange}
+              />
+            </ExpandableSection>
+          </div>
+
         </div>
         <div className="options-column">
           <div className="options-row">
-            <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
-          </div>
-          <div className="options-row">
-          </div>
-          <div className="options-row">
-            <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
-            <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
-            <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
+            <div className="image-column">
+              <div>
+                <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
+              </div>
+              <div>
+                <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
+              </div>
+              <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+              <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
+            </div>
           </div>
         </div>
       </div>
