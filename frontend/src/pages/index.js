@@ -7,13 +7,19 @@ import GeometricTransformations from './components/GeometricTransformations';
 import SinglePixelOperations from './components/SinglePixelOperations';
 import Convolutions from './components/Convolutions';
 import Filtering from './components/Filtering';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
 function App() {
   const canvasRef = useRef();
+  const canvasDrawRef = useRef();
   const videoRef = useRef();
   const fileInputRef = useRef();
   const buttonRef = useRef();
+  const hiddenFileInputRef = useRef(); // delete later
   let videoOn = false;
+
+  const [activeTab, setActiveTab] = useState("image");
 
   const handleWasmDrawRef = useRef();
 
@@ -115,7 +121,14 @@ function App() {
 
       canvas.getContext('2d').drawImage(img, 0, 0);
       //draw(canvas.getContext('2d'), canvas.width, canvas.height);
-      handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height);
+
+      const canvasDraw = canvasDrawRef.current;
+      if (canvasDraw.getContext('2d')['drawImage'] != undefined) {
+        canvasDraw.width = canvas.width;
+        canvasDraw.height = canvas.height;
+        canvasDraw.getContext('2d').drawImage(canvas, 0, 0);
+        handleWasmDrawRef.current(canvasDraw.getContext('2d'), canvas.width, canvas.height);
+      }
     };
     reader.onload = function (event) {
       img.src = event.target.result;
@@ -221,19 +234,41 @@ function App() {
           </div>
 
         </div>
+
         <div className="options-column">
           <div className="options-row">
-            <div className="image-column">
-              <div>
-                <button ref={buttonRef} className="btn btn-primary mt-2">Switch webcam</button>
+            <Tabs
+              defaultActiveKey="image"
+              id="uncontrolled-tab-example"
+              onSelect={(k) => setActiveTab(k)}
+            >
+            <Tab eventKey="image" title="Image" className='coloredTab'>
+              <div className="image-column">
+                <div>
+                  <button ref={buttonRef} className="btn btn-primary mt-2 hideMe">Switch webcam</button>
+                </div>
+                <div>
+                  <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" className={activeTab === "webcam" ? "hideMe" : ""}/>
+                </div>
+                <canvas ref={canvasDrawRef} id="canvasUpdate" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} className={activeTab === "webcam" ? "": "hideMe"}></video>
               </div>
-              <div>
-                <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" />
+            </Tab> 
+            <Tab eventKey="webcam" title="Webcam" className='coloredTab'>
+              <div className="image-column">
+                <div>
+                  <button ref={buttonRef} className="btn btn-primary mt-2">Switch Webcam On/Off</button>
+                </div>
+                <div>
+                </div>
+                <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} ></video>
               </div>
-              <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
-              <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }}></video>
-            </div>
+            </Tab> 
+            </Tabs>
           </div>
+
         </div>
       </div>
     </div>

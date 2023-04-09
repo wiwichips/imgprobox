@@ -274,3 +274,24 @@ canvas, video {
   padding: 10px; /* Add padding around the images */
 }
 
+.nav-tabs .nav-link {
+  font-weight: bold;
+  background-color: #d9d9d9ff !important;
+  color: #df24ff !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.nav-tabs .nav-link.active {
+  border-bottom: solid 4px #df24ff !important;
+}
+
+.coloredTab {
+  background-color: #d9d9d9ff;
+}
+
+.hideMe {
+  display: none;
+  visibility: hidden;
+}
