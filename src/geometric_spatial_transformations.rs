@@ -21,10 +21,6 @@ pub fn flip_vertical(img: &mut Image) {
             let bottom = img.get_pixel_intensity(x, img.height - y - 1);
             img.set_pixel_intensity(x, y, bottom);
             img.set_pixel_intensity(x, img.height - y - 1, top);
-            if x % 100 == 0 {
-                img.set_pixel_intensity(x, y, (255,0,0));
-                img.set_pixel_intensity(x, img.height - y - 1, (0,255,0));
-            }
         }
     }
 }
