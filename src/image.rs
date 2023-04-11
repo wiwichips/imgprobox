@@ -1,23 +1,34 @@
+use crate::padding::*;
+
 // Image Struct
 pub struct Image {
     array: Vec<u8>,// canvas data (1d)
     pub width: i32,    // cols / width
     pub height: i32,    // rows / height
+    PaddingFn: fn(&Image, i32, i32) -> (u8,u8,u8),
 }
 
 impl Image {
     pub fn new(data: Vec<u8>, width: i32, height: i32) -> Self {
-        Image { array: data, width, height }
+        Image { array: data, width, height, PaddingFn: padding_zero }
+    }
+
+    pub fn change_padding(&mut self, padding: fn(&Image, i32, i32) -> (u8,u8,u8)) {
+        self.PaddingFn = padding;
     }
 
     pub fn get_pixel_intensity(&self, x: i32, y: i32) -> (u8,u8,u8) {
-        let index = self.get_pixel_index(x,y);
+        // TODO call the PaddingFn.pad..... instead of self.get......
+        let index = self.get_pixel_index(x,y); 
         return (self.array[index], self.array[index + 1], self.array[index + 2])
     }
 
+    /*
+    // deprecated
     pub fn get_pixel_intensity_padding(&self, x: i32, y: i32, pad: fn(&Image, i32, i32) -> (u8,u8,u8)) -> (u8,u8,u8) {
         return pad(&self, x, y);
     }
+    */
 
     pub fn set_pixel_intensity(&mut self, x: i32, y: i32, rgb: (u8,u8,u8)) {
         let index = self.get_pixel_index(x,y);
@@ -35,7 +46,7 @@ impl Image {
     }
 
     pub fn copy(&self) -> Image {
-        let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width }; 
+        let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width, PaddingFn: self.PaddingFn }; 
         for i in 0usize..self.array.len() {
             img.array[i] = self.array[i];
         }
