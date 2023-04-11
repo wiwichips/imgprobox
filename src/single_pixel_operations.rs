@@ -150,4 +150,10 @@ pub fn grayscale(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
     (avg as u8, avg as u8, avg as u8)
 }
 
+pub fn sepia(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
+    let tr = 0.393 * r as f64 + 0.769 * g as f64 + 0.189 * b as f64;
+    let tg = 0.349 * r as f64 + 0.686 * g as f64 + 0.168 * b as f64;
+    let tb = 0.272 * r as f64 + 0.534 * g as f64 + 0.131 * b as f64;
+    (tr as u8, tg as u8, tb as u8)
+}
 
