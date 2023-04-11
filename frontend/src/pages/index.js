@@ -162,24 +162,14 @@ function App() {
 
     async function initialize() {
       await init();
-
       button.onclick = flipVideoFeed;
       fileInput.addEventListener('change', handleImage, false);
 
       function processFrame() {
         canvas.width = video.videoWidth === 0 ? 640 : video.videoWidth;
         canvas.height = video.videoHeight === 0 ? 480 : video.videoHeight;
-
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        /*
-        let image = new Image();
-        image.src = canvas.toDataURL();
-        canvas.getContext('2d').drawImage(image, 0, 0);
-        */
-
-        handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height);
-
+        handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height); // call wasm
         if (videoOn) {
           window.requestAnimationFrame(processFrame);
         }
@@ -195,7 +185,6 @@ function App() {
             })
             .then(window.requestAnimationFrame(processFrame))
             .catch(console.error);
-
           videoOn = true;
         } else {
           localStream.getTracks()[0].stop();
@@ -251,7 +240,6 @@ function App() {
           </div>
 
         </div>
-
         <div className="options-column">
           <div className="options-row">
             <Tabs
@@ -271,7 +259,6 @@ function App() {
               <div>
                 <button ref={buttonRef} className="btn btn-primary mt-2 hideMe">Switch webcam</button>
               </div>
-
             </Tab> 
             <Tab eventKey="webcam" title="Webcam" className='coloredTab'>
               <div className="image-column">
@@ -286,12 +273,10 @@ function App() {
             </Tab> 
             </Tabs>
           </div>
-
         </div>
       </div>
     </div>
   );
-
 }
 
 export default App;
