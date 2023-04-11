@@ -1,5 +1,4 @@
 use crate::image::Image;
-use crate::padding::padding_zero;
 
 use web_sys::console;
 use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
@@ -22,7 +21,7 @@ impl Kernel {
         return self.array[y as usize][x as usize];
     }
 
-    pub fn get_sum_at_index_padding(&self, x: i32, y: i32, img: &Image, pad: fn(&Image, i32, i32) -> (u8,u8,u8) ) -> (u8, u8, u8) {
+    pub fn get_sum_at_index_padding(&self, x: i32, y: i32, img: &Image) -> (u8, u8, u8) {
         let mut sum_r: f64 = 0.0;
         let mut sum_g: f64 = 0.0;
         let mut sum_b: f64 = 0.0;
@@ -34,7 +33,7 @@ impl Kernel {
         // iterate through each element in the kernel and apply it to the image
         for i in 0i32..self.width {
             for j in 0i32..self.height {
-                let (r,g,b) = pad(&img, x + i + left, y + j + top);
+                let (r,g,b) = img.get_pixel_intensity(x + i + left, y + j + top);
 
                 sum_r += r as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
                 sum_g += g as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
@@ -45,8 +44,7 @@ impl Kernel {
     }
 
     pub fn get_sum_at_index(&self, x: i32, y: i32, img: &Image) -> (u8,u8,u8) {
-        // use 0 padding by default
-        return self.get_sum_at_index_padding(x,y,img, padding_zero);
+        self.get_sum_at_index_padding(x,y,img)
     }
 
     pub fn sum(&self) -> f64 {

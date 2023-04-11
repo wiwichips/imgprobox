@@ -1,24 +1,20 @@
 use crate::image::Image;
 
-// padding functions
-pub trait PaddingFn {
-    fn pad(&self, image: &Image, x: i32, y: i32) -> (u8,u8,u8);
-}
-
 pub fn padding_zero(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
-    if x < 0 || y < 0 {
+    if x < 0 || y < 0  || x >= image.width || y >= image.height {
         return (0,0,0);
     }
-    if x >= image.width || y >= image.height {
-        return (0,0,0);
-    }
-    return image.get_pixel_intensity(x, y);
+    image.get_pixel_intensity_no_padding(x, y)
 }
 
 pub fn padding_circular(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
-    return image.get_pixel_intensity(x % image.width, y % image.height);
+    if x >= 0 && y >= 0 && x < image.width && y < image.height {
+        return image.get_pixel_intensity_no_padding(x, y);
+    }
+    image.get_pixel_intensity_no_padding(((x % image.width) + image.width) % image.width , ((y % image.height) + image.height) % image.height)
 }
 
+/*
 pub fn padding_reflected(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     let x_reflected = if x < 0 {
         -x - 1
@@ -38,4 +34,4 @@ pub fn padding_reflected(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
 
     return image.get_pixel_intensity(x_reflected, y_reflected);
 }
-
+*/
