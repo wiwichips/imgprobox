@@ -128,7 +128,7 @@ pub fn power_law_mapping(img: &mut Image, gamma: f64) {
 }
 
 // noise ------------------------------------------------------------
-pub fn generate_noise_function(noise_ratio: f64, seed: u32, noise_value: u8) -> impl FnMut(u8,u8,u8) -> (u8,u8,u8) {
+pub fn generate_noise(noise_ratio: f64, seed: u32, noise_value: u8) -> impl FnMut(u8,u8,u8) -> (u8,u8,u8) {
     // In order to avoid calling the JavaScript random number
     // generator for every pixel in the image, we use a simple
     // linear congruential generator to generate a random number
@@ -153,10 +153,9 @@ pub fn generate_noise_function(noise_ratio: f64, seed: u32, noise_value: u8) -> 
 
 pub fn noise(img: &mut Image, noise_ratio: f64, seed: u32, salt: bool) {
     let noise_value = if salt { 255 } else { 0 };
-    let noise_function = generate_noise_function(noise_ratio, seed, noise_value);
+    let noise_function = generate_noise(noise_ratio, seed, noise_value);
     apply_multi_channel_mutable_spo(img, noise_function);
 }
-
 
 // hard coded single pixel operations that may be handy to have -----
 pub fn invert(intensity: u8) -> u8 {
