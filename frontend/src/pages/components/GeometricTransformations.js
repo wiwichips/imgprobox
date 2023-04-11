@@ -39,6 +39,15 @@ const GeometricTransformations = ({
         <label>
           <input
             type="checkbox"
+            name="crop"
+          />
+         Crop Image 
+        </label>
+      </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
             name="mirror"
             checked={transformations.mirror}
             onChange={handleCheckboxChange}
@@ -72,7 +81,6 @@ const GeometricTransformations = ({
       </div>
       <div>
         <label>
-          Scale Image
           <input
             type="number"
             name="scale"
@@ -81,7 +89,7 @@ const GeometricTransformations = ({
             value={transformations.scale}
             onChange={handleSliderChange}
           />
-          %
+          % Scale Image
         </label>
       </div>
       <div>
