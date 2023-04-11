@@ -22,13 +22,6 @@ where
 
 // Modify the apply_spo_chain function to accept Vec<Box<dyn SinglePixelOperation>>
 pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperation>>) {
-/*
-    let js: JsValue = img.width.into();
-    console::log_2(&"width\t".into(), &js);
-    let js: JsValue = img.height.into();
-    console::log_2(&"height\t".into(), &js);
-*/
-
     for x in 0i32..img.width {
         for y in 0i32..img.height {
             let (mut r, mut g, mut b) = img.get_pixel_intensity(x, y);
@@ -40,26 +33,21 @@ pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperat
     }
 }
 
-/*
-pub fn apply_spo_chain<F>(img: &mut Image, spo_array: Vec<F>)
+pub fn apply_multi_channel_spo<F>(img: &mut Image, tri_chan_spo: F)
 where
     F: Fn(u8, u8, u8) -> (u8, u8, u8),
 {
     for x in 0i32..img.width {
         for y in 0i32..img.height {
-            let (mut r, mut g, mut b) = img.get_pixel_intensity(x,y);
-            for spo in spo_array.iter() {
-                (r,g,b) = spo(r, g, b);
-            }
-            img.set_pixel_intensity(x,y, (r,g,b)); 
+            let (r, g, b) = img.get_pixel_intensity(x,y);
+            img.set_pixel_intensity(x,y, tri_chan_spo(r,g,b)); 
         }
     }
 }
-*/
 
-pub fn apply_multi_channel_spo<F>(img: &mut Image, tri_chan_spo: F)
+pub fn apply_multi_channel_mutable_spo<F>(img: &mut Image, mut tri_chan_spo: F)
 where
-    F: Fn(u8, u8, u8) -> (u8, u8, u8),
+    F: FnMut(u8, u8, u8) -> (u8, u8, u8),
 {
     for x in 0i32..img.width {
         for y in 0i32..img.height {
@@ -138,6 +126,37 @@ pub fn generate_power_mapping(gamma: f64) -> impl Fn(u8) -> u8 {
 pub fn power_law_mapping(img: &mut Image, gamma: f64) {
     apply_spo(img, generate_power_mapping(gamma));
 }
+
+// noise ------------------------------------------------------------
+pub fn generate_noise_function(noise_ratio: f64, seed: u32, noise_value: u8) -> impl FnMut(u8,u8,u8) -> (u8,u8,u8) {
+    // In order to avoid calling the JavaScript random number
+    // generator for every pixel in the image, we use a simple
+    // linear congruential generator to generate a random number
+    // for each pixel. This is a lot faster than calling the
+    // JavaScript random number generator for every pixel.
+    let mut current_seed = seed;
+    move |r: u8, g: u8, b: u8| -> (u8, u8, u8) {
+
+        // Update the seed using a simple LCG formula
+        current_seed = (current_seed * 1664525 + 1013904223) & 0xFFFFFFFF;
+
+        // Generate a random float between 0 and 1 using the updated seed
+        let random_float = (current_seed as f64) / (u32::MAX as f64);
+
+        if random_float > noise_ratio {
+            (noise_value, noise_value, noise_value)
+        } else {
+            (r,g,b)
+        }
+    }
+}
+
+pub fn noise(img: &mut Image, noise_ratio: f64, seed: u32, salt: bool) {
+    let noise_value = if salt { 255 } else { 0 };
+    let noise_function = generate_noise_function(noise_ratio, seed, noise_value);
+    apply_multi_channel_mutable_spo(img, noise_function);
+}
+
 
 // hard coded single pixel operations that may be handy to have -----
 pub fn invert(intensity: u8) -> u8 {
