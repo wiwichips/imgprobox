@@ -143,7 +143,7 @@ pub fn generate_noise_function(noise_ratio: f64, seed: u32, noise_value: u8) -> 
         // Generate a random float between 0 and 1 using the updated seed
         let random_float = (current_seed as f64) / (u32::MAX as f64);
 
-        if random_float > noise_ratio {
+        if random_float < noise_ratio {
             (noise_value, noise_value, noise_value)
         } else {
             (r,g,b)
