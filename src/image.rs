@@ -10,7 +10,7 @@ pub struct Image {
 
 impl Image {
     pub fn new(data: Vec<u8>, width: i32, height: i32) -> Self {
-        Image { array: data, width, height, pad_fn: padding_circular }
+        Image { array: data, width, height, pad_fn: padding_reflected }
     }
 
     pub fn set_padding(&mut self, padding: fn(&Image, i32, i32) -> (u8,u8,u8)) {

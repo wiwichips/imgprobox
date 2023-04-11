@@ -14,8 +14,10 @@ pub fn padding_circular(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     image.get_pixel_intensity_no_padding(((x % image.width) + image.width) % image.width , ((y % image.height) + image.height) % image.height)
 }
 
-/*
 pub fn padding_reflected(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
+    if x >= 0 && y >= 0 && x < image.width && y < image.height {
+        return image.get_pixel_intensity_no_padding(x, y);
+    }
     let x_reflected = if x < 0 {
         -x - 1
     } else if x >= image.width {
@@ -32,6 +34,5 @@ pub fn padding_reflected(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
         y
     };
 
-    return image.get_pixel_intensity(x_reflected, y_reflected);
+    image.get_pixel_intensity(x_reflected, y_reflected)
 }
-*/
