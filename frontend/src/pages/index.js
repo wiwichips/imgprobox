@@ -172,9 +172,11 @@ function App() {
 
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
+        /*
         let image = new Image();
         image.src = canvas.toDataURL();
         canvas.getContext('2d').drawImage(image, 0, 0);
+        */
 
         handleWasmDrawRef.current(canvas.getContext('2d'), canvas.width, canvas.height);
 
