@@ -133,19 +133,35 @@ pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image 
     new_img
 }
 
-// scale by nearest neighbor
-pub fn scale_nearest_neighbor(img: &mut Image, scale: f64) {
-    let mut new_img = img.copy();
+pub fn scale(img: &mut Image, scale: f64, interpolation: InterpolationFn) -> Image{
     let new_width = (img.width as f64 * scale) as i32;
     let new_height = (img.height as f64 * scale) as i32;
+    let mut new_img = Image::new_blank(new_width, new_height);
     for y in 0..new_height {
         for x in 0..new_width {
             let new_x = (x as f64 / scale) as i32;
             let new_y = (y as f64 / scale) as i32;
-            let rgb = new_img.get_pixel_intensity(new_x, new_y);
-            img.set_pixel_intensity(x, y, rgb);
+            let rgb = interpolation(&img, new_x as f64, new_y as f64);
+            new_img.set_pixel_intensity(x, y, rgb);
         }
     }
+    new_img
+}
+
+// scale by nearest neighbor
+pub fn scale_nearest_neighbor(img: &mut Image, scale: f64) -> Image{
+    let new_width = (img.width as f64 * scale) as i32;
+    let new_height = (img.height as f64 * scale) as i32;
+    let mut new_img = Image::new_blank(new_width, new_height);
+    for y in 0..new_height {
+        for x in 0..new_width {
+            let new_x = (x as f64 / scale) as i32;
+            let new_y = (y as f64 / scale) as i32;
+            let rgb = img.get_pixel_intensity(new_x, new_y);
+            new_img.set_pixel_intensity(x, y, rgb);
+        }
+    }
+    new_img
 }
 
 // scale by bilinear interpolation

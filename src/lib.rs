@@ -72,9 +72,13 @@ pub fn draw(
     }
 
     // scale image
-    if scale_factor != 1.0 {
+    if scale_factor < 0.995 || scale_factor > 1.005{
         // BROKEN
-        scale_bilinear(&mut my_image, scale_factor);
+        my_image = scale(&mut my_image, scale_factor, nearest_neighbour_interpolation);
+        if let Some(canvas) = ctx.canvas() {
+            canvas.set_width(my_image.width as u32);
+            canvas.set_height(my_image.height as u32);
+        }
     }
 
     // add single pixel operations to list of single pixel operations for computation
