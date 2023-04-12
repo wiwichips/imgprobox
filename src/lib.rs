@@ -19,6 +19,12 @@ use single_pixel_operations::*;
 mod geometric_spatial_transformations;
 use geometric_spatial_transformations::*;
 
+mod neighbourhood_operations;
+use neighbourhood_operations::*;
+
+mod histogram;
+use histogram::*;
+
 //mod binary_spo;
 
 #[wasm_bindgen]
@@ -51,8 +57,10 @@ pub fn draw(
         } else if (spo.op_type == "powerLaw") {
             spo_array.push(Box::new(single_to_tri(generate_power_mapping(spo.a))));
         } else if (spo.op_type == "histogram_equalization") {
-            // TODO
-            // not implemented yet
+            let mut h = Histogram::new(&my_image);
+            h.normalize();
+            h.cumulative();
+            h.equalize(&mut my_image);
         }
     }
 
@@ -66,9 +74,28 @@ pub fn draw(
 
     apply_spo_chain(&mut my_image, spo_array);
 
+    // testing histogram
+    /*
+    let mut h = Histogram::new(&my_image);
+    h.normalize();
+    h.cumulative();
+    h.equalize(&mut my_image);
+    */
+
+    // testing noise
+    /*
+    noise(&mut my_image, 0.1, 1, false);
+    noise(&mut my_image, 0.1, 2, true);
+
+    img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+    median_filter(&mut my_image, &mut img_out, 2, false);
+    my_image = img_out;
+    */
+
     //flip_horizontal(&mut my_image);
     //flip_vertical(&mut my_image);
-    if rotate_theta != 0.0 || rotate_theta != 360.0 {
+
+    if rotate_theta > 1.0 || rotate_theta < 359.0 {
         rotate(&mut my_image, rotate_theta);
     }
 
