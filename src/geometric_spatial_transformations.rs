@@ -13,7 +13,6 @@ pub fn flip_horizontal(img: &mut Image) {
 }
 
 // vertical flip in place
-// TODO broken only for video webcam 
 pub fn flip_vertical(img: &mut Image) {
     for y in 0..img.height/2 {
         for x in 0..img.width {
@@ -24,6 +23,9 @@ pub fn flip_vertical(img: &mut Image) {
         }
     }
 }
+
+// cropping
+
 
 // rotate by theta degrees
 pub fn rotate(img: &mut Image, theta: f64) {
