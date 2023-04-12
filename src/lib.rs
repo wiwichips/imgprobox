@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, ImageData};
+use web_sys::{CanvasRenderingContext2d, ImageData, HtmlCanvasElement};
 use wasm_bindgen::{Clamped, JsCast};
 use web_sys::console;
 use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array, Array, Object};
@@ -95,6 +95,7 @@ pub fn draw(
     //flip_horizontal(&mut my_image);
     //flip_vertical(&mut my_image);
 
+
     if rotate_theta > 1.0 || rotate_theta < 359.0 {
         rotate(&mut my_image, rotate_theta);
     }
@@ -103,6 +104,7 @@ pub fn draw(
         // BROKEN
         scale_bilinear(&mut my_image, scale_factor);
     }
+
 
     // do convolutions after 
     if doConv {
@@ -122,8 +124,62 @@ pub fn draw(
         data = my_image.get_array();
     }
 
-    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
-    ctx.put_image_data(&data, 0.1, 0.0)
+    
+
+    /*
+    //let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), width, height)?;
+    if let Some(canvas) = ctx.canvas() {
+        canvas.set_width(150);
+        canvas.set_height(150);
+    }
+
+    my_image = Image::new(vec![255; 150*150*4], 150, 150);
+    for i in 0..150 {
+        for j in 0..150 {
+            my_image.set_pixel_intensity(i, j, (50 as u8, 255 as u8, 255 as u8));
+        }
+    }
+
+    data = my_image.get_array();
+    */
+
+    /*
+    let my_image = crop_helper(&my_image, 100, 100, 149, 149, & ctx);
+    */
+
+    //console::log_1(&format!("{} {} {} {}", my_image.width, my_image.height, my_image.get_array().len(), my_image.get_array().len() / 4).into());
+
+    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), my_image.width as u32, my_image.height as u32)?;
+
+    //console::log_1(&format!("2 - {} {} {} {}", data.width(), data.height(), data.data().len(), data.data().len() / 4).into());
+
+    ctx.put_image_data(&data, 0.0, 0.0)
+}
+
+pub fn crop_helper(img: &Image, x1: u32, y1: u32, x2: u32, y2: u32, ctx: & CanvasRenderingContext2d) -> Image {
+    let new_width: u32 = x2 - x1 + 1;
+    let new_height: u32 = y2 - y1 + 1;
+
+    console::log_1(&format!("{} {} {} {}", x1, y1, new_width, new_height).into());
+
+    if let Some(canvas) = ctx.canvas() {
+        canvas.set_width(new_width);
+        canvas.set_height(new_height);
+    }
+
+    let mut img_out = Image::new(
+        vec![255; (new_width*new_height*4) as usize],
+        new_width as i32, 
+        new_height as i32, 
+    );
+
+    for i in 0..new_width {
+        for j in 0..new_height {
+            img_out.set_pixel_intensity(i as i32, j as i32, img.get_pixel_intensity((i + x1) as i32, (j + y1) as i32));
+        }
+    }
+
+    img_out
 }
 
 // Single Pixel Operation Options object
