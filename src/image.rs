@@ -13,6 +13,10 @@ impl Image {
         Image { array: data, width, height, pad_fn: padding_reflected }
     }
 
+    pub fn new_blank(width: i32, height: i32) -> Self {
+        Image { array: vec![255; (width * height * 4) as usize], width, height, pad_fn: padding_reflected }
+    }
+
     pub fn set_padding(&mut self, padding: fn(&Image, i32, i32) -> (u8,u8,u8)) {
         self.pad_fn = padding;
     }

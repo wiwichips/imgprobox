@@ -58,10 +58,47 @@ impl Kernel {
     }
 
     pub fn convolve(&self, img: &Image, img_out: &mut Image) {
+        // Check if the kernel is separable, if it is, use the separable convolution algorithm
+        if let Some((row_kernel, col_kernel)) = self.decompose_rank_one_combined() {
+            let img_out_temporary = &mut Image::new_blank(img.width, img.height);
+            row_kernel.convolve(img,img_out_temporary);
+            col_kernel.convolve(img_out_temporary, img_out);
+            return;
+        }
+
+        // iterate through each pixel in the image
         for y in 0i32..img.height {
             for x in 0i32..img.width {
                 img_out.set_pixel_intensity(x,y,self.get_sum_at_index(x,y,img));
             }
         }
+    }
+
+    pub fn decompose_rank_one_combined(&self) -> Option<(Kernel, Kernel)> {
+        let mut row_vec: Option<Vec<f64>> = None;
+
+        for i in 0..self.height as usize {
+            let scale = self.array[i][0];
+            if scale == 0.0 {
+                continue;
+            }
+
+            let scaled_row: Vec<f64> = self.array[0].iter().map(|v| v * scale).collect();
+            if self.array[i] != scaled_row {
+                return None;
+            }
+
+            if row_vec.is_none() {
+                row_vec = Some(scaled_row);
+            }
+        }
+
+        let row_vec = row_vec?;
+        let col_vec: Vec<f64> = self.array.iter().map(|row| row[0]).collect();
+
+        let row_kernel = Kernel::new(vec![row_vec.clone()], self.width, 1);
+        let col_kernel = Kernel::new(col_vec.iter().map(|&val| vec![val]).collect(), 1, self.height);
+
+        Some((row_kernel, col_kernel))
     }
 }
