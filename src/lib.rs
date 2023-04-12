@@ -42,12 +42,33 @@ pub fn draw(
     let clamped_data = current_image.data();
 
     let spo_options = js_spo_array_to_vec(&spo_array_options);
-    let mut doConv = false;
+    let mut do_convolution = false;
     let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
     let mut spo_array: Vec<Box<dyn SinglePixelOperation>> = vec![];
     let mut img_out;
     let mut data;
 
+    // crop image
+    if false {
+        my_image = crop_helper(&my_image, 100, 100, 400, 149, & ctx);
+    }
+
+    // mirror image
+    //flip_horizontal(&mut my_image);
+    //flip_vertical(&mut my_image);
+
+    // rotate image
+    if rotate_theta > 1.0 || rotate_theta < 359.0 {
+        rotate(&mut my_image, rotate_theta);
+    }
+
+    // scale image
+    if scale_factor != 1.0 {
+        // BROKEN
+        scale_bilinear(&mut my_image, scale_factor);
+    }
+
+    // add single pixel operations to list of single pixel operations for computation
     for spo in &spo_options {
         console::log_1(&format!("{:?}", spo.op_type).into());
         if (spo.op_type == "threshold") {
@@ -64,50 +85,33 @@ pub fn draw(
         }
     }
 
+    // apply single pixel operations to image
+    apply_spo_chain(&mut my_image, spo_array);
+
+    // check if convolution is selected
     for i in 0..options.length() {
         if let Some(option_str) = options.get(i).as_string() {
             if option_str == "convolutionDemo" {
-                doConv = true;
+                do_convolution = true;
             }
         }
     }
 
-    apply_spo_chain(&mut my_image, spo_array);
-
-    // testing histogram
-    /*
-    let mut h = Histogram::new(&my_image);
-    h.normalize();
-    h.cumulative();
-    h.equalize(&mut my_image);
-    */
-
-    // testing noise
+    // Noise
     /*
     noise(&mut my_image, 0.1, 1, false);
     noise(&mut my_image, 0.1, 2, true);
+    */
 
+    // filtering
+    /*
     img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
     median_filter(&mut my_image, &mut img_out, 2, false);
     my_image = img_out;
     */
 
-    //flip_horizontal(&mut my_image);
-    //flip_vertical(&mut my_image);
-
-
-    if rotate_theta > 1.0 || rotate_theta < 359.0 {
-        rotate(&mut my_image, rotate_theta);
-    }
-
-    if scale_factor != 1.0 {
-        // BROKEN
-        scale_bilinear(&mut my_image, scale_factor);
-    }
-
-
-    // do convolutions after 
-    if doConv {
+    // Convolution
+    if do_convolution {
         // Convert the JavaScript 2D array into a Rust Vec<Vec<f64>>.
         let kernel_matrix = js_2d_array_to_vec(&custom_convolution);
         let kernel_width = kernel_matrix[0].len() as i32;
@@ -121,11 +125,6 @@ pub fn draw(
         kernel.convolve(&my_image, &mut img_out);
         my_image = img_out;
     } 
-   
-    // crop image
-    if true {
-        my_image = crop_helper(&my_image, 100, 100, 400, 149, & ctx);
-    }
 
     // paint new image to canvas
     data = my_image.get_array();
