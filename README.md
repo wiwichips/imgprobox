@@ -1,4 +1,4 @@
-# IMGPROBOX 
+# ![IMGPROBOX](https://wiwichips.github.io/imgprobox/logo.png)
 IMGPROBOX is an online image processing toolbox written in Rust + WASM with a React frontend.
 
 ## User Manual
