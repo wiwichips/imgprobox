@@ -48,6 +48,7 @@ pub fn draw(
     let mut img_out;
     let mut data;
 
+
     // crop image
     if false {
         my_image = crop_helper(&my_image, 100, 100, 400, 149, & ctx);
@@ -58,8 +59,16 @@ pub fn draw(
     //flip_vertical(&mut my_image);
 
     // rotate image
-    if rotate_theta > 1.0 || rotate_theta < 359.0 {
-        rotate(&mut my_image, rotate_theta);
+    if rotate_theta > 1.0 && rotate_theta < 357.0 {
+        //rotate(&mut my_image, rotate_theta);
+        //my_image = rotate_2(&my_image, rotate_theta);
+        //my_image = rotate_3(&my_image, rotate_theta, nearest_neighbour_interpolation);
+        my_image = rotate(&my_image, rotate_theta, bilinear_interpolation);
+
+        if let Some(canvas) = ctx.canvas() {
+            canvas.set_width(my_image.width as u32);
+            canvas.set_height(my_image.height as u32);
+        }
     }
 
     // scale image
@@ -128,7 +137,7 @@ pub fn draw(
 
     // paint new image to canvas
     data = my_image.get_array();
-    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), my_image.width as u32, my_image.height as u32)?;
+    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&mut data), (my_image.width + 0) as u32, (my_image.height + 0) as u32)?;
     ctx.put_image_data(&data, 0.0, 0.0)
 }
 
@@ -139,8 +148,8 @@ pub fn crop_helper(img: &Image, x1: u32, y1: u32, x2: u32, y2: u32, ctx: & Canva
         canvas.set_width(new_width);
         canvas.set_height(new_height);
     } else {
-        return img.copy();
         console::log_1(&format!("Error: Canvas undefined during crop - reverting to original image").into());
+        return img.copy();
     }
     let mut img_out = Image::new(vec![255; (new_width*new_height*4) as usize], new_width as i32, new_height as i32);
 
