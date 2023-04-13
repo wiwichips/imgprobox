@@ -86,7 +86,8 @@ where
 // linear mappings --------------------------------------------------
 pub fn generate_linear_mapping(a: i32, b: i32) -> impl Fn(u8) -> u8 {
     move |intensity: u8| -> u8 {
-        (a * intensity as i32 + b) as u8
+        let result = a * intensity as i32 + b;
+        result.max(0).min(255) as u8
     }
 }
 
