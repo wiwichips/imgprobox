@@ -58,12 +58,15 @@ impl Kernel {
     }
 
     pub fn convolve(&self, img: &Image, img_out: &mut Image) {
-        // Check if the kernel is separable, if it is, use the separable convolution algorithm
-        if let Some((row_kernel, col_kernel)) = self.decompose_rank_one_combined() {
-            let img_out_temporary = &mut Image::new_blank(img.width, img.height);
-            row_kernel.convolve(img,img_out_temporary);
-            col_kernel.convolve(img_out_temporary, img_out);
-            return;
+        // if the kernel a width or height of 1, then just convolve
+        if (self.width > 1) && (self.height > 1) {
+            // Check if the kernel is separable, if it is, use the separable convolution algorithm
+            if let Some((row_kernel, col_kernel)) = self.decompose_rank_one_combined() {
+                let img_out_temporary = &mut Image::new_blank(img.width, img.height);
+                row_kernel.convolve(img,img_out_temporary);
+                col_kernel.convolve(img_out_temporary, img_out);
+                return;
+            }
         }
 
         // iterate through each pixel in the image
