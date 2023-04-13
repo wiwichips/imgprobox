@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Filtering = ({ onFilteringChange }) => {
   const [salt, setSalt] = useState(0);
@@ -7,7 +7,7 @@ const Filtering = ({ onFilteringChange }) => {
   const [neighborhoodType, setNeighborhoodType] = useState('chessboard');
   const [neighborhoodSize, setNeighborhoodSize] = useState(1);
 
-  const handleFilterChange = () => {
+  useEffect(() => {
     if (onFilteringChange) {
       onFilteringChange({
         salt,
@@ -17,7 +17,7 @@ const Filtering = ({ onFilteringChange }) => {
         neighborhoodSize,
       });
     }
-  };
+  }, [salt, pepper, filterType, neighborhoodType, neighborhoodSize]);
 
   return (
     <div className="filtering">
@@ -34,7 +34,6 @@ const Filtering = ({ onFilteringChange }) => {
                 max="100"
                 onChange={(e) => {
                     setSalt(Math.max(0, Math.min(100, parseFloat(e.target.value))));
-                    handleFilterChange();
                 }}
             />
             % Salt
@@ -49,7 +48,6 @@ const Filtering = ({ onFilteringChange }) => {
                 max="100"
                 onChange={(e) => {
                     setPepper(Math.max(0, Math.min(100, parseFloat(e.target.value))));
-                    handleFilterChange();
                 }}
             />
             % Pepper
@@ -67,7 +65,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={filterType === 'none'}
                 onChange={() => {
                     setFilterType('none');
-                    handleFilterChange();
                 }}
             />
             None
@@ -81,7 +78,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={filterType === 'max'}
                 onChange={() => {
                     setFilterType('max');
-                    handleFilterChange();
                 }}
             />
             Max
@@ -95,7 +91,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={filterType === 'median'}
                 onChange={() => {
                     setFilterType('median');
-                    handleFilterChange();
                 }}
             />
             Median
@@ -109,7 +104,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={filterType === 'min'}
                 onChange={() => {
                     setFilterType('min');
-                    handleFilterChange();
                 }}
             />
             Min
@@ -128,7 +122,6 @@ const Filtering = ({ onFilteringChange }) => {
                 min="1"
                 onChange={(e) => {
                     setNeighborhoodSize(Math.max(1, parseInt(e.target.value)));
-                    handleFilterChange();
                 }}
             />
             </label>
@@ -141,7 +134,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={neighborhoodType === 'chessboard'}
                 onChange={() => {
                     setNeighborhoodType('chessboard');
-                    handleFilterChange();
                 }}
             />
             d8 (Chessboard)
@@ -155,7 +147,6 @@ const Filtering = ({ onFilteringChange }) => {
                 checked={neighborhoodType === 'cityBlock'}
                 onChange={() => {
                     setNeighborhoodType('cityBlock');
-                    handleFilterChange();
                 }}
             />
             d4 (City block)
