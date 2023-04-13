@@ -73,8 +73,17 @@ function App() {
     setConvolutions(newConvolutions);
   };
 
+  // filtering
+  const [filtering, setFiltering] = useState({
+    filterType: 'none',
+    neighborhoodSize: 1,
+    neighborhoodType: 'chessboard',
+    pepper: 0,
+    salt: 0,
+  });
+
   const handleFilteringChange = (newFiltering) => {
-    console.log(newFiltering);
+    setFiltering(newFiltering);
   };
 
   const handleWasmDraw = useCallback((canvasObj, canvasWidth, canvasHeight) => {
@@ -103,8 +112,6 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
-    console.log(selectedPaddingType)
-
     draw(
       // canvas
       canvasObj,
@@ -123,15 +130,17 @@ function App() {
       [],
       transformations.scalingMethod,
       // filtering
-      0,
-      0,
-      "none",
-      1,
-      "d4",
+      filtering.salt/100,
+      filtering.pepper/100,
+      filtering.filterType,
+      filtering.neighborhoodSize,
+      filtering.neighborhoodType,
       // padding
       selectedPaddingType,
+      // random
+      parseInt(Math.random()*1000),
       );
-  }, [singlePixelOperations, convolutions, transformations, selectedPaddingType]);
+  }, [singlePixelOperations, convolutions, transformations, selectedPaddingType, filtering]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
@@ -177,7 +186,7 @@ function App() {
   // Add a new useEffect to listen for changes in singlePixelOperations, convolutions, and transformations
   useEffect(() => {
     handleReDrawImage();
-  }, [singlePixelOperations, convolutions, transformations, handleReDrawImage]);
+  }, [singlePixelOperations, convolutions, transformations, handleReDrawImage, selectedPaddingType, filtering]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

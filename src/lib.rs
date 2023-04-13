@@ -52,6 +52,8 @@ pub fn draw(
     distance_type: String,
     // padding
     padding_method: String,
+    // random
+    random_seed: u32,
 ) -> Result<(), JsValue> {
     // get current image data
     let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
@@ -152,19 +154,6 @@ pub fn draw(
         }
     }
 
-    // Noise
-    /*
-    noise(&mut my_image, 0.1, 1, false);
-    noise(&mut my_image, 0.1, 2, true);
-    */
-
-    // filtering
-    /*
-    img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
-    median_filter(&mut my_image, &mut img_out, 2, false);
-    my_image = img_out;
-    */
-
     // Convolution
     if do_convolution {
         // Convert the JavaScript 2D array into a Rust Vec<Vec<f64>>.
@@ -180,6 +169,22 @@ pub fn draw(
         kernel.convolve(&my_image, &mut img_out);
         my_image = img_out;
     } 
+
+    // Noise
+    if (salt_ratio>0.00001) {
+        noise(&mut my_image, salt_ratio, random_seed, true);
+    }
+    console::log_1(&format!("pep ratio: {}", pepper_ratio).into());
+    if (pepper_ratio>0.00001) {
+        noise(&mut my_image, pepper_ratio, random_seed + 1, false);
+    }
+
+    // filtering
+    /*
+    img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+    median_filter(&mut my_image, &mut img_out, 2, false);
+    my_image = img_out;
+    */
 
     // paint new image to canvas
     data = my_image.get_array();
