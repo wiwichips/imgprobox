@@ -66,9 +66,9 @@ pub fn draw(
     let mut padding: fn(&Image, i32, i32) -> (u8,u8,u8) = padding_zero;
 
     // set padding method
-    let mut padding = if padding_method == "reflect" {
+    let mut padding = if padding_method == "reflected" {
         padding_reflected
-    } else if padding_method == "zeros" {
+    } else if padding_method == "zero" {
         padding_zero
     } else if padding_method == "circular" {
         padding_circular

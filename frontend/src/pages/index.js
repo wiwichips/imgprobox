@@ -30,7 +30,6 @@ function App() {
 
   const handlePaddingTypeChange = (paddingType) => {
     setSelectedPaddingType(paddingType);
-    console.log(paddingType);
   };
 
   // geometric transformations
@@ -104,6 +103,8 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
+    console.log(selectedPaddingType)
+
     draw(
       // canvas
       canvasObj,
@@ -130,7 +131,7 @@ function App() {
       // padding
       selectedPaddingType,
       );
-  }, [singlePixelOperations, convolutions, transformations]);
+  }, [singlePixelOperations, convolutions, transformations, selectedPaddingType]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
