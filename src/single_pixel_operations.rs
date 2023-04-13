@@ -98,7 +98,8 @@ pub fn linear_mapping(img: &mut Image, a: f64, b: f64) {
 // thresholding -----------------------------------------------------
 // TODO fix thresholding
 pub fn generate_threshold_mapping(u: i32) -> impl Fn(u8) -> u8 {
-    generate_linear_mapping(255.0, (-256.0) * u as f64)
+    //generate_linear_mapping(255.0, (-256.0) * u as f64)
+    generate_linear_mapping(255.0, (-255.0) * u as f64)
 }
 
 // power law mappings -----------------------------------------------

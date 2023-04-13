@@ -5,11 +5,11 @@ const SinglePixelOperations = ({
 }) => {
   const [operations, setOperations] = useState({
     inverse: false,
-    threshold: false,
-    thresholdValue: 0,
+    thresholdValue: 128,
     linearMapping: false,
     linearA: 1,
     linearB: 0,
+    threshold: false,
     powerLaw: false,
     gamma: 1,
     equalize: false,
@@ -48,8 +48,11 @@ const SinglePixelOperations = ({
       <h4>Single Pixel Operations</h4>
       <h5>Linear Mappings</h5>
       {simpleItem("checkbox", "inverse", operations.inverse, handleCheckboxChange)}
+      {simpleItem("checkbox", "sepia", operations.sepia, handleCheckboxChange)}
+      {simpleItem("checkbox", "grayscale", operations.grayscale, handleCheckboxChange)}
       {simpleItem("checkbox", "threshold", operations.threshold, handleCheckboxChange, "Threshold at u = ", (
-        <input type="number" name="thresholdValue" value={operations.thresholdValue} onChange={handleInputChange} disabled={!operations.threshold} /> ))}
+        <input type="number" name="thresholdValue" value={operations.thresholdValue} onChange={handleInputChange} disabled={!operations.threshold} />
+      ))}
       <div>
         <label>
           <input type="checkbox" name="linearMapping" checked={operations.linearMapping} onChange={handleCheckboxChange}/>

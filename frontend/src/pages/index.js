@@ -102,7 +102,11 @@ function App() {
     if (singlePixelOperations.inverse) {
       spo_array.push({op_type: 'linear', a: -1, b: 255});
     }
-    if (singlePixelOperations.threshold) {
+    if (singlePixelOperations.sepia) {
+      spo_array.push({op_type: 'sepia', a: 0, b: 0});
+    } if (singlePixelOperations.grayscale) {
+      spo_array.push({op_type: 'grayscale', a: 0, b: 0});
+    } if (singlePixelOperations.threshold) {
       spo_array.push({op_type: 'threshold', a: singlePixelOperations.thresholdValue, b: 0});
     } if (singlePixelOperations.linearMapping) {
       spo_array.push({op_type: 'linear', a: singlePixelOperations.linearA, b: singlePixelOperations.linearB});
