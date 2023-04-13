@@ -7,11 +7,7 @@ pub fn nearest_neighbour_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, 
     let x = x.round() as i32;
     let y = y.round() as i32;
 
-    if x >= 0 && x < img.width && y >= 0 && y < img.height {
-        img.get_pixel_intensity_no_padding(x, y)
-    } else {
-        (255, 255, 255)
-    }
+    img.get_pixel_intensity(x, y)
 }
 
 pub fn bilinear_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
@@ -20,38 +16,33 @@ pub fn bilinear_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
     let x2 = x1 + 1;
     let y2 = y1 + 1;
 
-    if x1 >= 0 && x1 < img.width && y1 >= 0 && y1 < img.height
-        && x2 >= 0 && x2 < img.width && y2 >= 0 && y2 < img.height
-    {
-        // Get the four nearest pixels
-        let q11 = img.get_pixel_intensity_no_padding(x1, y1);
-        let q12 = img.get_pixel_intensity_no_padding(x1, y2);
-        let q21 = img.get_pixel_intensity_no_padding(x2, y1);
-        let q22 = img.get_pixel_intensity_no_padding(x2, y2);
+    // Get the four nearest pixels
+    let q11 = img.get_pixel_intensity_no_padding(x1, y1);
+    let q12 = img.get_pixel_intensity_no_padding(x1, y2);
+    let q21 = img.get_pixel_intensity_no_padding(x2, y1);
+    let q22 = img.get_pixel_intensity_no_padding(x2, y2);
 
-        // Perform linear interpolation in the x direction
-        let r1 = (
-            ((x2 as f64 - x) * q11.0 as f64 + (x - x1 as f64) * q21.0 as f64) / (x2 as f64 - x1 as f64),
-            ((x2 as f64 - x) * q11.1 as f64 + (x - x1 as f64) * q21.1 as f64) / (x2 as f64 - x1 as f64),
-            ((x2 as f64 - x) * q11.2 as f64 + (x - x1 as f64) * q21.2 as f64) / (x2 as f64 - x1 as f64),
-        );
+    // Perform linear interpolation in the x direction
+    let r1 = (
+        ((x2 as f64 - x) * q11.0 as f64 + (x - x1 as f64) * q21.0 as f64) / (x2 as f64 - x1 as f64),
+        ((x2 as f64 - x) * q11.1 as f64 + (x - x1 as f64) * q21.1 as f64) / (x2 as f64 - x1 as f64),
+        ((x2 as f64 - x) * q11.2 as f64 + (x - x1 as f64) * q21.2 as f64) / (x2 as f64 - x1 as f64),
+    );
 
-        let r2 = (
-            ((x2 as f64 - x) * q12.0 as f64 + (x - x1 as f64) * q22.0 as f64) / (x2 as f64 - x1 as f64),
-            ((x2 as f64 - x) * q12.1 as f64 + (x - x1 as f64) * q22.1 as f64) / (x2 as f64 - x1 as f64),
-            ((x2 as f64 - x) * q12.2 as f64 + (x - x1 as f64) * q22.2 as f64) / (x2 as f64 - x1 as f64),
-        );
+    let r2 = (
+        ((x2 as f64 - x) * q12.0 as f64 + (x - x1 as f64) * q22.0 as f64) / (x2 as f64 - x1 as f64),
+        ((x2 as f64 - x) * q12.1 as f64 + (x - x1 as f64) * q22.1 as f64) / (x2 as f64 - x1 as f64),
+        ((x2 as f64 - x) * q12.2 as f64 + (x - x1 as f64) * q22.2 as f64) / (x2 as f64 - x1 as f64),
+    );
 
-        // Perform linear interpolation in the y direction
-        let result = (
-            ((y2 as f64 - y) * r1.0 + (y - y1 as f64) * r2.0) / (y2 as f64 - y1 as f64),
-            ((y2 as f64 - y) * r1.1 + (y - y1 as f64) * r2.1) / (y2 as f64 - y1 as f64),
-            ((y2 as f64 - y) * r1.2 + (y - y1 as f64) * r2.2) / (y2 as f64 - y1 as f64),
-        );
+    // Perform linear interpolation in the y direction
+    let result = (
+        ((y2 as f64 - y) * r1.0 + (y - y1 as f64) * r2.0) / (y2 as f64 - y1 as f64),
+        ((y2 as f64 - y) * r1.1 + (y - y1 as f64) * r2.1) / (y2 as f64 - y1 as f64),
+        ((y2 as f64 - y) * r1.2 + (y - y1 as f64) * r2.2) / (y2 as f64 - y1 as f64),
+    );
 
-        return (result.0.round() as u8, result.1.round() as u8, result.2.round() as u8);
-    }
-    (255,255,255)
+    return (result.0.round() as u8, result.1.round() as u8, result.2.round() as u8);
 }
 
 // horizontal flip in place

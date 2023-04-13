@@ -8,7 +8,7 @@ mod image;
 use image::Image;
 
 mod padding;
-//use helpers::PaddingFn;
+use padding::*;
 
 mod convolution;
 use convolution::Kernel;
@@ -33,21 +33,49 @@ pub fn draw(
     width: u32,
     height: u32,
     options: Array,
+    // convolutions
     custom_convolution: Array,
+    // single pixel operations
     spo_array_options: Array,
+    // geometric spatial transformations
     rotate_theta: f64,
     scale_factor: f64,
+    flip_horizontal_option: bool,
+    flip_vertical_option: bool,
+    crop_data: Array,
+    interpolation_method: String,
+    // filtering
+    salt_ratio: f64,
+    pepper_ratio: f64,
+    filtering: String,
+    neighbourhood_size: u32,
+    distance_type: String,
+    // padding
+    padding_method: String,
 ) -> Result<(), JsValue> {
+    // get current image data
     let current_image = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
     let clamped_data = current_image.data();
 
+    // variables for handle arguments
     let spo_options = js_spo_array_to_vec(&spo_array_options);
     let mut do_convolution = false;
-    let mut my_image = Image::new(clamped_data.to_vec(), width as i32, height as i32);
     let mut spo_array: Vec<Box<dyn SinglePixelOperation>> = vec![];
     let mut img_out;
     let mut data;
+    let mut padding: fn(&Image, i32, i32) -> (u8,u8,u8) = padding_zero;
 
+    // set padding method
+    let mut padding = if padding_method == "reflect" {
+        padding_reflected
+    } else if padding_method == "zeros" {
+        padding_zero
+    } else if padding_method == "circular" {
+        padding_circular
+    } else {
+        padding_zero
+    };
+    let mut my_image = Image::new_with_padding(clamped_data.to_vec(), width as i32, height as i32, padding);
 
     // crop image
     if false {
@@ -55,8 +83,12 @@ pub fn draw(
     }
 
     // mirror image
-    //flip_horizontal(&mut my_image);
-    //flip_vertical(&mut my_image);
+    if (flip_horizontal_option) {
+        flip_horizontal(&mut my_image);
+    }
+    if (flip_vertical_option) {
+        flip_vertical(&mut my_image);
+    }
 
     // rotate image
     if rotate_theta > 1.0 && rotate_theta < 357.0 {
@@ -71,7 +103,6 @@ pub fn draw(
 
     // scale image
     if scale_factor < 0.995 || scale_factor > 1.005{
-        // BROKEN
         my_image = scale(&mut my_image, scale_factor, nearest_neighbour_interpolation);
         if let Some(canvas) = ctx.canvas() {
             canvas.set_width(my_image.width as u32);
@@ -81,8 +112,13 @@ pub fn draw(
 
     // add single pixel operations to list of single pixel operations for computation
     for spo in &spo_options {
-        console::log_1(&format!("{:?}", spo.op_type).into());
-        if (spo.op_type == "threshold") {
+        if (spo.op_type == "inverse") {
+            spo_array.push(Box::new(single_to_tri(invert)));
+        } else if (spo.op_type == "sepia") {
+            spo_array.push(Box::new(sepia));
+        } else if (spo.op_type == "grayscale") {
+            spo_array.push(Box::new(grayscale));
+        } else if (spo.op_type == "threshold") {
             spo_array.push(Box::new(single_to_tri(generate_threshold_mapping(spo.a as i32))));
         } else if (spo.op_type == "linear") {
             spo_array.push(Box::new(single_to_tri(generate_linear_mapping(spo.a as f64, spo.b as f64))));

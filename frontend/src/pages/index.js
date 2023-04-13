@@ -104,7 +104,32 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
-    draw(canvasObj, canvasWidth, canvasHeight, options, kernel, spo_array, transformations.rotate, transformations.scale/100);
+    draw(
+      // canvas
+      canvasObj,
+      canvasWidth,
+      canvasHeight,
+      options,
+      // convolution
+      kernel,
+      // single pixel operations
+      spo_array,
+      // geometric spatial transformations
+      transformations.rotate,
+      transformations.scale/100,
+      transformations.mirror,
+      transformations.flip,
+      [],
+      transformations.scalingMethod,
+      // filtering
+      0,
+      0,
+      "none",
+      1,
+      "d4",
+      // padding
+      selectedPaddingType,
+      );
   }, [singlePixelOperations, convolutions, transformations]);
 
   useEffect(() => {
