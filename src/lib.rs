@@ -77,6 +77,15 @@ pub fn draw(
     };
     let mut my_image = Image::new_with_padding(clamped_data.to_vec(), width as i32, height as i32, padding);
 
+    // set interpolation method
+    let interpolate_fn = if interpolation_method == "nearest" {
+        nearest_neighbour_interpolation
+    } else if interpolation_method == "bilinear" {
+        bilinear_interpolation
+    } else {
+        nearest_neighbour_interpolation
+    };
+
     // crop image
     if false {
         my_image = crop_helper(&my_image, 100, 100, 400, 149, & ctx);
@@ -92,8 +101,7 @@ pub fn draw(
 
     // rotate image
     if rotate_theta > 1.0 && rotate_theta < 357.0 {
-        my_image = rotate(&my_image, rotate_theta, nearest_neighbour_interpolation);
-        //my_image = rotate(&my_image, rotate_theta, bilinear_interpolation);
+        my_image = rotate(&my_image, rotate_theta, interpolate_fn);
 
         if let Some(canvas) = ctx.canvas() {
             canvas.set_width(my_image.width as u32);
@@ -103,7 +111,7 @@ pub fn draw(
 
     // scale image
     if scale_factor < 0.995 || scale_factor > 1.005{
-        my_image = scale(&mut my_image, scale_factor, nearest_neighbour_interpolation);
+        my_image = scale(&mut my_image, scale_factor, interpolate_fn);
         if let Some(canvas) = ctx.canvas() {
             canvas.set_width(my_image.width as u32);
             canvas.set_height(my_image.height as u32);

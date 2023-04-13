@@ -17,10 +17,10 @@ pub fn bilinear_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
     let y2 = y1 + 1;
 
     // Get the four nearest pixels
-    let q11 = img.get_pixel_intensity_no_padding(x1, y1);
-    let q12 = img.get_pixel_intensity_no_padding(x1, y2);
-    let q21 = img.get_pixel_intensity_no_padding(x2, y1);
-    let q22 = img.get_pixel_intensity_no_padding(x2, y2);
+    let q11 = img.get_pixel_intensity(x1, y1);
+    let q12 = img.get_pixel_intensity(x1, y2);
+    let q21 = img.get_pixel_intensity(x2, y1);
+    let q22 = img.get_pixel_intensity(x2, y2);
 
     // Perform linear interpolation in the x direction
     let r1 = (

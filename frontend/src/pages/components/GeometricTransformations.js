@@ -116,18 +116,6 @@ const GeometricTransformations = ({
           Bi-linear interpolation
         </label>
       </div>
-      <div>
-        <label>
-          <input
-            type="radio"
-            name="scalingMethod"
-            value="bicubic"
-            checked={transformations.scalingMethod === 'bicubic'}
-            onChange={handleRadioChange}
-          />
-          Bicubic interpolation
-        </label>
-      </div>
     </div>
   );
 };
