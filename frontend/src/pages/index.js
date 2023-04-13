@@ -112,6 +112,8 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
+    console.log(filtering)
+
     draw(
       // canvas
       canvasObj,

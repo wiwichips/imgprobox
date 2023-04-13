@@ -47,7 +47,7 @@ pub fn draw(
     // filtering
     salt_ratio: f64,
     pepper_ratio: f64,
-    filtering: String,
+    filter_type: String,
     neighbourhood_size: u32,
     distance_type: String,
     // padding
@@ -174,17 +174,24 @@ pub fn draw(
     if (salt_ratio>0.00001) {
         noise(&mut my_image, salt_ratio, random_seed, true);
     }
-    console::log_1(&format!("pep ratio: {}", pepper_ratio).into());
     if (pepper_ratio>0.00001) {
         noise(&mut my_image, pepper_ratio, random_seed + 1, false);
     }
 
     // filtering
-    /*
-    img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
-    median_filter(&mut my_image, &mut img_out, 2, false);
-    my_image = img_out;
-    */
+    if (filter_type == "min") {
+        img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+        min_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
+        my_image = img_out;
+    } else if (filter_type == "median") {
+        img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+        median_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
+        my_image = img_out;
+    } else if (filter_type == "max") {
+        img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+        max_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
+        my_image = img_out;
+    }
 
     // paint new image to canvas
     data = my_image.get_array();
