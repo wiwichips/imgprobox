@@ -180,7 +180,7 @@ pub fn draw(
 
     // filtering
     if (filter_type == "min") {
-        img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+        img_out = my_image.copy(); 
         min_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
         my_image = img_out;
     } else if (filter_type == "median") {
@@ -188,7 +188,7 @@ pub fn draw(
         median_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
         my_image = img_out;
     } else if (filter_type == "max") {
-        img_out = Image::new(vec![255; my_image.get_array().len()], my_image.width, my_image.height);
+        img_out = my_image.copy(); 
         max_filter(&mut my_image, &mut img_out, neighbourhood_size as i32, distance_type == "chessboard");
         my_image = img_out;
     }
