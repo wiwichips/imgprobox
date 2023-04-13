@@ -9,6 +9,7 @@ const GeometricTransformations = ({
     rotate: 0,
     scale: 100,
     scalingMethod: 'nearest',
+    crop: false,
   });
 
   const handleCheckboxChange = (event) => {
@@ -40,6 +41,8 @@ const GeometricTransformations = ({
           <input
             type="checkbox"
             name="crop"
+            checked={transformations.crop}
+            onChange={handleCheckboxChange}
           />
          Crop Image 
         </label>

@@ -89,8 +89,9 @@ pub fn draw(
     };
 
     // crop image
-    if false {
-        my_image = crop_helper(&my_image, 100, 100, 400, 149, & ctx);
+    if crop_data.length() > 0 {
+        let crop_data_vec = js_array_to_vec(&crop_data);
+        my_image = crop_helper(&my_image, crop_data_vec[0], crop_data_vec[1], crop_data_vec[2], crop_data_vec[3], & ctx);
     }
 
     // mirror image
@@ -231,6 +232,16 @@ impl SinglePixelOption {
     pub fn new(op_type: String, a: f64, b: f64) -> Self {
         SinglePixelOption { op_type, a, b }
     }
+}
+
+
+fn js_array_to_vec(js_array: &Array) -> Vec<u32> {
+    let len = js_array.length() as usize;
+    let mut vec = Vec::with_capacity(len);
+    for i in 0..len {
+        vec.push(js_array.get(i as u32).as_f64().unwrap() as u32);
+    }
+    vec
 }
 
 

@@ -9,6 +9,8 @@ import Convolutions from './components/Convolutions';
 import Filtering from './components/Filtering';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import ReactCrop from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
 
 function App() {
   const canvasRef = useRef();
@@ -39,11 +41,19 @@ function App() {
     rotate: 0,
     scale: 100,
     scalingMethod: 'nearest',
+    crop: false,
   });
 
+  const [cropping, setCropping] = useState();
+
   const handleTransformationsChange = (newTransformations) => {
+    // check if there was a change in crop from false to true
+    if (!transformations.crop && newTransformations.crop) {
+      console.log("NEW DCROP");
+    }
     setTransformations(newTransformations);
   };
+
 
   // single pixel operations
   const [singlePixelOperations, setSinglePixelOperations] = useState({
@@ -116,8 +126,22 @@ function App() {
       spo_array.push({op_type: 'histogram_equalization', a: 0, b: 0});
     }
 
-    console.log(filtering)
+    // crop
+    function adjustCropFromBase(num, base, newLength) {
+      return num / base * newLength;
+    }
 
+
+    const crop_values = transformations.crop && cropping ? [
+      adjustCropFromBase(cropping.x, 640, canvasWidth),
+      adjustCropFromBase(cropping.y, 640, canvasHeight),
+      adjustCropFromBase(cropping.width + cropping.x, 640, canvasWidth),
+      adjustCropFromBase(cropping.height + cropping.y, 640, canvasHeight),
+    ] : [];
+    console.log(crop_values)
+    console.log(cropping)
+
+    // call wasm draw function from rust
     draw(
       // canvas
       canvasObj,
@@ -133,7 +157,7 @@ function App() {
       transformations.scale/100,
       transformations.mirror,
       transformations.flip,
-      [],
+      crop_values,
       transformations.scalingMethod,
       // filtering
       filtering.salt/100,
@@ -146,7 +170,7 @@ function App() {
       // random
       parseInt(Math.random()*1000),
       );
-  }, [singlePixelOperations, convolutions, transformations, selectedPaddingType, filtering]);
+  }, [singlePixelOperations, convolutions, transformations, selectedPaddingType, filtering, cropping]);
 
   useEffect(() => {
     handleWasmDrawRef.current = handleWasmDraw;
@@ -294,7 +318,9 @@ function App() {
                   <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" className={activeTab === "webcam" ? "hideMe" : ""}/>
                 </div>
                 <canvas ref={canvasDrawRef} id="canvasUpdate" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
-                <canvas ref={canvasImgRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                <ReactCrop crop={cropping} onChange={newCrop => setCropping(newCrop)} src={cachedImageRef.current ? cachedImageRef.current.src : ''}>
+                  <canvas ref={canvasImgRef} id="canvas" width="640" height="640" style={{ unit: '%', width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                </ReactCrop>
                 <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} className={activeTab === "webcam" ? "": "hideMe"}></video>
               </div>
               <div>
@@ -309,7 +335,9 @@ function App() {
                 <div>
                 </div>
                 <canvas ref={canvasRef} id="canvas" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
-                <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} ></video>
+                <ReactCrop crop={cropping} onChange={newCrop => setCropping(newCrop)} src={cachedImageRef.current ? cachedImageRef.current.src : ''}>
+                  <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} ></video>
+                </ReactCrop>
               </div>
             </Tab> 
             </Tabs>
