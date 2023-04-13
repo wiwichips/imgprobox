@@ -60,10 +60,8 @@ pub fn draw(
 
     // rotate image
     if rotate_theta > 1.0 && rotate_theta < 357.0 {
-        //rotate(&mut my_image, rotate_theta);
-        //my_image = rotate_2(&my_image, rotate_theta);
-        //my_image = rotate_3(&my_image, rotate_theta, nearest_neighbour_interpolation);
-        my_image = rotate(&my_image, rotate_theta, bilinear_interpolation);
+        my_image = rotate(&my_image, rotate_theta, nearest_neighbour_interpolation);
+        //my_image = rotate(&my_image, rotate_theta, bilinear_interpolation);
 
         if let Some(canvas) = ctx.canvas() {
             canvas.set_width(my_image.width as u32);
@@ -87,7 +85,7 @@ pub fn draw(
         if (spo.op_type == "threshold") {
             spo_array.push(Box::new(single_to_tri(generate_threshold_mapping(spo.a as i32))));
         } else if (spo.op_type == "linear") {
-            spo_array.push(Box::new(single_to_tri(generate_linear_mapping(spo.a as i32, spo.b as i32))));
+            spo_array.push(Box::new(single_to_tri(generate_linear_mapping(spo.a as f64, spo.b as f64))));
         } else if (spo.op_type == "powerLaw") {
             spo_array.push(Box::new(single_to_tri(generate_power_mapping(spo.a))));
         } else if (spo.op_type == "histogram_equalization") {

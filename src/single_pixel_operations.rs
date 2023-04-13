@@ -84,21 +84,21 @@ where
 }
 
 // linear mappings --------------------------------------------------
-pub fn generate_linear_mapping(a: i32, b: i32) -> impl Fn(u8) -> u8 {
+pub fn generate_linear_mapping(a: f64, b: f64) -> impl Fn(u8) -> u8 {
     move |intensity: u8| -> u8 {
-        let result = a * intensity as i32 + b;
-        result.max(0).min(255) as u8
+        let result = a * intensity as f64 + b;
+        result.max(0.0).min(255.0) as u8
     }
 }
 
-pub fn linear_mapping(img: &mut Image, a: i32, b: i32) {
-    apply_spo(img, generate_linear_mapping(-1, 255));
+pub fn linear_mapping(img: &mut Image, a: f64, b: f64) {
+    apply_spo(img, generate_linear_mapping(a, b));
 }
 
 // thresholding -----------------------------------------------------
 // TODO fix thresholding
 pub fn generate_threshold_mapping(u: i32) -> impl Fn(u8) -> u8 {
-    generate_linear_mapping(255, (-256) * u)
+    generate_linear_mapping(255.0, (-256.0) * u as f64)
 }
 
 // power law mappings -----------------------------------------------
