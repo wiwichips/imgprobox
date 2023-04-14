@@ -1,5 +1,6 @@
 use crate::image::Image;
 
+/// Zero Padding function
 pub fn padding_zero(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     if x < 0 || y < 0  || x >= image.width || y >= image.height {
         return (0,0,0);
@@ -7,6 +8,7 @@ pub fn padding_zero(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     image.get_pixel_intensity_no_padding(x, y)
 }
 
+/// Circular-Indexing Padding function
 pub fn padding_circular(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     if x >= 0 && y >= 0 && x < image.width && y < image.height {
         return image.get_pixel_intensity_no_padding(x, y);
@@ -14,10 +16,15 @@ pub fn padding_circular(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
     image.get_pixel_intensity_no_padding(((x % image.width) + image.width) % image.width , ((y % image.height) + image.height) % image.height)
 }
 
+/// Reflected-Indexing Padding function
 pub fn padding_reflected(image: &Image, x: i32, y: i32) -> (u8,u8,u8) {
+    // If the pixel is within the default bounds of the image
+    // avoid executing if statements to calculate the reflected index
     if x >= 0 && y >= 0 && x < image.width && y < image.height {
         return image.get_pixel_intensity_no_padding(x, y);
     }
+
+    // Calculate the reflected indicies for x and y
     let x_reflected = if x < 0 {
         -x - 1
     } else if x >= image.width {
