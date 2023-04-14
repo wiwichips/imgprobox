@@ -1,8 +1,10 @@
 use crate::image::Image;
 
+/// Min filtering function
 pub fn min_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard: bool) {
     for i in 0..img.width {
         for j in 0..img.height {
+            // generate a new neighbourhood for each pixel and get the min value
             let mut n = NeighbourHood::new(& img, i, j, distance);
             if (chessboard) {
                 n.find_d8_neighbours();
@@ -15,9 +17,11 @@ pub fn min_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard: b
     }
 }
 
+/// Median filtering function
 pub fn median_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard: bool) {
     for i in 0..img.width {
         for j in 0..img.height {
+            // generate a new neighbourhood for each pixel and get the median value
             let mut n = NeighbourHood::new(& img, i, j, distance);
             if (chessboard) {
                 n.find_d8_neighbours();
@@ -30,9 +34,11 @@ pub fn median_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard
     }
 }
 
+/// Max filtering function
 pub fn max_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard: bool) {
     for i in 0..img.width {
         for j in 0..img.height {
+            // generate a new neighbourhood for each pixel and get the max value
             let mut n = NeighbourHood::new(& img, i, j, distance);
             if (chessboard) {
                 n.find_d8_neighbours();
@@ -45,28 +51,32 @@ pub fn max_filter(img: &Image, img_out: &mut Image, distance: i32, chessboard: b
     }
 }
 
-// ------------------------------
-
+// neighbourhood operations
+/// Neighbourhood struct
 pub struct NeighbourHood<'a> {
-    pub elements: Vec<(u8, u8, u8)>,
-    img: &'a Image,
-    x: i32,
-    y: i32,
-    min: usize,
-    median: usize,
-    max: usize,
-    distance: i32,
+    pub elements: Vec<(u8, u8, u8)>, // elements in the neighbourhood
+    img: &'a Image, // the image data associated with the neighbourhood
+    x: i32, // x coordinate of the centre of the neighbourhood
+    y: i32,  // y coordinate of the centre of the neighbourhood
+    min: usize, // index of the minimum element in the neighbourhood
+    median: usize, // index of the median element in the neighbourhood
+    max: usize, // index of the maximum element in the neighbourhood
+    distance: i32, // distance from the centre of the neighbourhood
 }
 
+// Neighbourhood methods
 impl<'a> NeighbourHood<'a>{
+    /// Constructor
     pub fn new(img: &'a Image, x: i32, y: i32, distance: i32) -> Self {
         NeighbourHood { elements: Vec::new(), img: img, min: 0, median: 0, max: 0, x, y, distance}
     }
 
-    // TODO - this can be made much faster if you don't loop over the same elements again...
-    // I also don't like the way this is written, it should make more sense
-
+    /// Find the city-block distance neighbours of the centre pixel
     pub fn find_d4_neighbours(&mut self) {
+        // this for loop will iterate therough only each pixel in the nighbourhood
+        // by traversing a diamond shaped pattern.
+        // it iterates through each row of the neighbourhood and then only iterates
+        // through the pixels in that row that are within the diamond shape.
         for i in -self.distance..=self.distance {
             for j in -(self.distance - i.abs())..=(self.distance - i.abs()) {
                 let pixel = self.img.get_pixel_intensity(self.x + j, self.y + i);
@@ -80,6 +90,7 @@ impl<'a> NeighbourHood<'a>{
         }
     }
 
+    /// Find the chessboard distance neighbours of the centre pixel
     pub fn find_d8_neighbours(&mut self) {
         for i in -self.distance..=self.distance {
             for j in -self.distance..=self.distance {
@@ -94,16 +105,22 @@ impl<'a> NeighbourHood<'a>{
         }
     }
 
+    /// Get the max pixel value in the neighbourhood
     pub fn get_max(&self) -> (u8, u8, u8) {
         return self.elements[self.max];
     }
 
+    /// Get the min pixel value in the neighbourhood
     pub fn get_min(&self) -> (u8, u8, u8) {
         return self.elements[self.min];
     }
 
-    // TODO - use selection sort to find median O(n) instead of O(nlogn)
+    /// Get the median pixel value in the neighbourhood
+    /// NOTE: this function could be made much more efficient if it
+    /// were to find the median using "selection sort"
+    /// https://en.wikipedia.org/wiki/Selection_sort
     pub fn get_median(&mut self) -> (u8, u8, u8) {
+        // first sort the elements then find the median
         self.elements.sort();
         return self.elements[self.elements.len() / 2];
     }
