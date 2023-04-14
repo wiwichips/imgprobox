@@ -1,13 +1,16 @@
 use crate::image::Image;
 
+/// Struct to hold the histogram data
 pub struct Histogram {
-    channel_red: Vec<f64>,
+    channel_red: Vec<f64>, // frequency of light intensity for each channel
     channel_green: Vec<f64>,
     channel_blue: Vec<f64>,
-    num_pixels: u32,
+    num_pixels: u32, // number of pixels in the original image (used for normalization)
 }
 
+/// Histogram Methods
 impl Histogram {
+    /// Constructor for histogram - creates a new histogram based on the image
     pub fn new(img: &Image) -> Histogram {
         let mut channel_red = vec![0.0; 256];
         let mut channel_green = vec![0.0; 256];
@@ -28,6 +31,7 @@ impl Histogram {
         }
     }
 
+    /// Normalize the histogram
     pub fn normalize(&mut self) {
         // normalize the histogram by dividing each frequency by the total number of pixels
         for i in 0..256 {
@@ -37,6 +41,7 @@ impl Histogram {
         }
     }
 
+    /// Convert the histogram into a cumulative histogram
     pub fn cumulative(&mut self) {
         // calculate the cumulative distribution function for each channel
         for i in 1..256 {
@@ -46,10 +51,14 @@ impl Histogram {
         }
     }
 
+    /// Perform histogram equalization on the image
+    /// this will require the historgram to be normalized and cumulative
+    /// for best results. 
     pub fn equalize(&mut self, img: &mut Image) {
         // equalize the image by mapping the intensity of each pixel to the corresponding value in the CDF
         for i in 0..img.width {
             for j in 0..img.height {
+                // for a given pixel intensity, get the corresponding value from the CDF and multiply by 255 to get the new intensity
                 let (r, g, b) = img.get_pixel_intensity_no_padding(i, j);
                 img.set_pixel_intensity(i, j, ((self.channel_red[r as usize] * 255.0) as u8, (self.channel_green[g as usize] * 255.0) as u8, (self.channel_blue[b as usize] * 255.0) as u8));
             }
