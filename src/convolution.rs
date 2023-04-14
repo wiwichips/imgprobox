@@ -4,23 +4,25 @@ use web_sys::console;
 use js_sys::{ArrayBuffer, Uint8ClampedArray, Uint8Array};
 use wasm_bindgen::prelude::*;
 
-
-// Kernel Struct
+/// A struct that represents a convolution kernel
 pub struct Kernel {
-    array: Vec<Vec<f64>>, // actual 2d kernel
-    pub width: i32,           // cols / width
-    pub height: i32,           // rows / height
+    array: Vec<Vec<f64>>,
+    pub width: i32,
+    pub height: i32,
 }
 
 impl Kernel {
+    /// constructor for a kernel
     pub fn new(data: Vec<Vec<f64>>, width: i32, height: i32) -> Self {
         Kernel { array: data, width, height }
     }
 
+    /// gets a specific intensity at a specific index in the kernel
     fn get_element(&self, x: i32, y: i32) -> f64 {
         return self.array[y as usize][x as usize];
     }
 
+    /// returns the convolution sum of the kernel over a point in the image
     pub fn get_sum_at_index_padding(&self, x: i32, y: i32, img: &Image) -> (u8, u8, u8) {
         let mut sum_r: f64 = 0.0;
         let mut sum_g: f64 = 0.0;
@@ -35,6 +37,8 @@ impl Kernel {
             for j in 0i32..self.height {
                 let (r,g,b) = img.get_pixel_intensity(x + i + left, y + j + top);
 
+                // for each color channel, add the product of the kernel element and the image pixel 
+                // where the kernel is roateted 180 degrees
                 sum_r += r as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
                 sum_g += g as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
                 sum_b += b as f64 * self.array[(self.height - j - 1) as usize][(self.width - i - 1) as usize];
@@ -43,10 +47,12 @@ impl Kernel {
         (sum_r.round() as u8, sum_g.round() as u8, sum_b.round() as u8)
     }
 
+    /// wrapper for get_sum_at_index_padding
     pub fn get_sum_at_index(&self, x: i32, y: i32, img: &Image) -> (u8,u8,u8) {
         self.get_sum_at_index_padding(x,y,img)
     }
 
+    /// returns the sum of all the elements in the kernel
     pub fn sum(&self) -> f64 {
         let mut sum: f64 = 0.0;
         for j in 0i32..self.height {
@@ -57,6 +63,7 @@ impl Kernel {
         sum
     }
 
+    /// applies a convolution kernel to an image img and stores the result in img_out
     pub fn convolve(&self, img: &Image, img_out: &mut Image) {
         // if the kernel a width or height of 1, then just convolve
         if (self.width > 1) && (self.height > 1) {
@@ -77,9 +84,11 @@ impl Kernel {
         }
     }
 
+    /// decomposes a kernel into two rank one kernels if possible and returns a 2-tuple of the two kernels
     pub fn decompose_rank_one_combined(&self) -> Option<(Kernel, Kernel)> {
         let mut row_vec: Option<Vec<f64>> = None;
 
+        /// check if the kernel is rank one
         for i in 0..self.height as usize {
             let scale = self.array[i][0];
             if scale == 0.0 {
@@ -96,6 +105,7 @@ impl Kernel {
             }
         }
 
+        // separate the kernel into two kerels for a row and column
         let row_vec = row_vec?;
         let col_vec: Vec<f64> = self.array.iter().map(|row| row[0]).collect();
 

@@ -5,12 +5,12 @@ use wasm_bindgen::prelude::*;
 
 
 // generic single pixel operation -----------------------------------
-// Define a new trait for the single pixel operation
+/// Define a new trait for the single pixel operation
 pub trait SinglePixelOperation {
     fn apply(&self, r: u8, g: u8, b: u8) -> (u8, u8, u8);
 }
 
-// Implement the trait for function pointers with the matching signature
+/// Implement the trait for function pointers with the matching signature
 impl<F> SinglePixelOperation for F
 where
     F: Fn(u8, u8, u8) -> (u8, u8, u8),
@@ -20,7 +20,7 @@ where
     }
 }
 
-// Modify the apply_spo_chain function to accept Vec<Box<dyn SinglePixelOperation>>
+/// Modify the apply_spo_chain function to accept Vec<Box<dyn SinglePixelOperation>>
 pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperation>>) {
     for x in 0i32..img.width {
         for y in 0i32..img.height {
@@ -33,6 +33,7 @@ pub fn apply_spo_chain(img: &mut Image, spo_array: Vec<Box<dyn SinglePixelOperat
     }
 }
 
+/// Applying multi channel(RGB) single pixel operations
 pub fn apply_multi_channel_spo<F>(img: &mut Image, tri_chan_spo: F)
 where
     F: Fn(u8, u8, u8) -> (u8, u8, u8),
@@ -45,6 +46,7 @@ where
     }
 }
 
+/// Applying multi channel (RGB) spo with mutable closure
 pub fn apply_multi_channel_mutable_spo<F>(img: &mut Image, mut tri_chan_spo: F)
 where
     F: FnMut(u8, u8, u8) -> (u8, u8, u8),
@@ -57,6 +59,7 @@ where
     }
 }
 
+/// Apply single channel spo to an image (graylevel image)
 pub fn apply_spo<F>(img: &mut Image, spo: F)
 where
     F: Fn(u8) -> u8,
@@ -65,6 +68,7 @@ where
     apply_multi_channel_spo(img, multi_channel_spo);
 }
 
+/// Convert a single channel spo to a multi channel spo
 pub fn single_to_tri<F>(spo: F) -> impl Fn(u8, u8, u8) -> (u8, u8, u8)
 where 
     F: Fn(u8) -> u8,
@@ -74,6 +78,7 @@ where
     }
 }
 
+/// Mangle function to use it as a trait object
 pub fn fn_to_opaque<F>(spo: F) -> impl Fn(u8, u8, u8) -> (u8, u8, u8)
 where 
     F: Fn(u8, u8, u8) -> (u8, u8, u8),
@@ -84,6 +89,7 @@ where
 }
 
 // linear mappings --------------------------------------------------
+/// Generating generic linear mappings using gain and bias parameters
 pub fn generate_linear_mapping(a: f64, b: f64) -> impl Fn(u8) -> u8 {
     move |intensity: u8| -> u8 {
         let result = a * intensity as f64 + b;
@@ -91,18 +97,19 @@ pub fn generate_linear_mapping(a: f64, b: f64) -> impl Fn(u8) -> u8 {
     }
 }
 
+/// Simple linear mapping for grayscale images
 pub fn linear_mapping(img: &mut Image, a: f64, b: f64) {
     apply_spo(img, generate_linear_mapping(a, b));
 }
 
 // thresholding -----------------------------------------------------
-// TODO fix thresholding
+/// Threshold mapping using linear mapping
 pub fn generate_threshold_mapping(u: i32) -> impl Fn(u8) -> u8 {
-    //generate_linear_mapping(255.0, (-256.0) * u as f64)
     generate_linear_mapping(255.0, (-255.0) * u as f64)
 }
 
 // power law mappings -----------------------------------------------
+/// Generating power law mappings using gamma parameter
 pub fn generate_power_mapping(gamma: f64) -> impl Fn(u8) -> u8 {
     let l = 256.0;
     let y = gamma;
@@ -125,11 +132,13 @@ pub fn generate_power_mapping(gamma: f64) -> impl Fn(u8) -> u8 {
     }
 }
 
+/// Applying power law mappings to grayscale images
 pub fn power_law_mapping(img: &mut Image, gamma: f64) {
     apply_spo(img, generate_power_mapping(gamma));
 }
 
 // noise ------------------------------------------------------------
+/// Generating noise functions using a noise ratio and a seed
 pub fn generate_noise(noise_ratio: f64, seed: u32, noise_value: u8) -> impl FnMut(u8,u8,u8) -> (u8,u8,u8) {
     // In order to avoid calling the JavaScript random number
     // generator for every pixel in the image, we use a simple
@@ -153,27 +162,30 @@ pub fn generate_noise(noise_ratio: f64, seed: u32, noise_value: u8) -> impl FnMu
     }
 }
 
+/// Applying salt or pepper noise to an image
 pub fn noise(img: &mut Image, noise_ratio: f64, seed: u32, salt: bool) {
     let noise_value = if salt { 255 } else { 0 };
     let noise_function = generate_noise(noise_ratio, seed, noise_value);
     apply_multi_channel_mutable_spo(img, noise_function);
 }
 
-// hard coded single pixel operations that may be handy to have -----
+// built in single pixel operations ---------------------------------
+/// Invert function
 pub fn invert(intensity: u8) -> u8 {
     (-1 * intensity as i32 + 255) as u8
 }
 
+/// Grayscale function
 pub fn grayscale(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
     let sum: f64 = r as f64 + g as f64 + b as f64;
     let avg = sum / 3.0;
     (avg as u8, avg as u8, avg as u8)
 }
 
+/// Sepia function
 pub fn sepia(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
     let tr = 0.393 * r as f64 + 0.769 * g as f64 + 0.189 * b as f64;
     let tg = 0.349 * r as f64 + 0.686 * g as f64 + 0.168 * b as f64;
     let tb = 0.272 * r as f64 + 0.534 * g as f64 + 0.131 * b as f64;
     (tr as u8, tg as u8, tb as u8)
 }
-
