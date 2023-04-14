@@ -3,6 +3,7 @@ use crate::image::Image;
 type InterpolationFn = fn(img: &Image, x: f64, y: f64) -> (u8, u8, u8);
 
 // interpolation functions
+/// Nearest Neighbour Interpolation Function
 pub fn nearest_neighbour_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
     let x = x.round() as i32;
     let y = y.round() as i32;
@@ -10,6 +11,7 @@ pub fn nearest_neighbour_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, 
     img.get_pixel_intensity(x, y)
 }
 
+/// Bilinear Interpolation Function
 pub fn bilinear_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
     let x1 = x.floor() as i32;
     let y1 = y.floor() as i32;
@@ -45,7 +47,7 @@ pub fn bilinear_interpolation(img: &Image, x: f64, y: f64) -> (u8, u8, u8) {
     return (result.0.round() as u8, result.1.round() as u8, result.2.round() as u8);
 }
 
-// horizontal flip in place
+/// Horizontal flip in place
 pub fn flip_horizontal(img: &mut Image) {
     for y in 0..img.height {
         for x in 0..img.width/2 {
@@ -57,7 +59,7 @@ pub fn flip_horizontal(img: &mut Image) {
     }
 }
 
-// vertical flip in place
+/// Vertical flip in place
 pub fn flip_vertical(img: &mut Image) {
     for y in 0..img.height/2 {
         for x in 0..img.width {
@@ -69,6 +71,7 @@ pub fn flip_vertical(img: &mut Image) {
     }
 }
 
+/// Rotate an image by theta degrees
 pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image {
     let theta_rad = theta.to_radians();
     let sin_theta = theta_rad.sin();
@@ -76,6 +79,10 @@ pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image 
 
     let (mut x_min, mut x_max, mut y_min, mut y_max) = (0f64, 0f64, 0f64, 0f64);
 
+    // first, find the corners of the rotated image and based off of them 
+    // determine the new bounding max and minimum values for the new image.
+    // the reason we need to do this is to ensure that the new image canvas
+    // is large enough to fit the entire rotated image.
     let corners = [
         (0, 0),
         (img.width, 0),
@@ -106,15 +113,21 @@ pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image 
     let translation_x = new_center_x - center_x;
     let translation_y = new_center_y - center_y;
 
+    // now, we can iterate over the new image and perform the rotation
     for y in 0..new_height {
         for x in 0..new_width {
+            // for each pixel in the new image, we need to find the
+            // corresponding pixel in the original image. We do this by
+            // performing the inverse rotation on the pixel in the new image
+            // and then using the inverse translation to find the corresponding
+            // pixel in the original image.
             let x = x as f64;
             let y = y as f64;
 
             let new_x = (x - new_center_x) * cos_theta + (y - new_center_y) * sin_theta + center_x;
             let new_y = -(x - new_center_x) * sin_theta + (y - new_center_y) * cos_theta + center_y;
 
-            let rgb = interpolation(img, new_x, new_y);
+            let rgb = interpolation(img, new_x, new_y); // use the interpolation type passed to the function
             new_img.set_pixel_intensity(x as i32, y as i32, rgb);
         }
     }
@@ -122,15 +135,19 @@ pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image 
     new_img
 }
 
+/// Scale an image based on a scaling factor
 pub fn scale(img: &mut Image, scale: f64, interpolation: InterpolationFn) -> Image{
+    // generate a new image to hold the scaled image
     let new_width = (img.width as f64 * scale) as i32;
     let new_height = (img.height as f64 * scale) as i32;
     let mut new_img = Image::new_blank(new_width, new_height);
+
+    // iterate over the new image and perform the scaling
     for y in 0..new_height {
         for x in 0..new_width {
             let new_x = (x as f64 / scale) as i32;
             let new_y = (y as f64 / scale) as i32;
-            let rgb = interpolation(&img, new_x as f64, new_y as f64);
+            let rgb = interpolation(&img, new_x as f64, new_y as f64); // use the interpolation type passed to the function
             new_img.set_pixel_intensity(x, y, rgb);
         }
     }
