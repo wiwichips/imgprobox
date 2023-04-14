@@ -128,10 +128,8 @@ function App() {
 
     // crop
     function adjustCropFromBase(num, base, newLength) {
-      return num / base * newLength;
+      return (num - 10) / base * newLength;
     }
-
-
     const crop_values = transformations.crop && cropping ? [
       adjustCropFromBase(cropping.x, 640, canvasWidth),
       adjustCropFromBase(cropping.y, 640, canvasHeight),
@@ -318,9 +316,14 @@ function App() {
                   <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader" className={activeTab === "webcam" ? "hideMe" : ""}/>
                 </div>
                 <canvas ref={canvasDrawRef} id="canvasUpdate" width="640" height="640" style={{ width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                { transformations.crop && (
                 <ReactCrop crop={cropping} onChange={newCrop => setCropping(newCrop)} src={cachedImageRef.current ? cachedImageRef.current.src : ''}>
                   <canvas ref={canvasImgRef} id="canvas" width="640" height="640" style={{ unit: '%', width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
                 </ReactCrop>
+                )}
+                { !transformations.crop && (
+                  <canvas ref={canvasImgRef} id="canvas" width="640" height="640" style={{ unit: '%', width: '100%', height: '100%', objectFit: 'contain' }}></canvas>
+                )}
                 <video ref={videoRef} playsInline autoPlay muted style={{ width: '100%' }} className={activeTab === "webcam" ? "": "hideMe"}></video>
               </div>
               <div>

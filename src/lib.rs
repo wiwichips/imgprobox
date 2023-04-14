@@ -210,7 +210,7 @@ pub fn crop_helper(img: &Image, x1: u32, y1: u32, x2: u32, y2: u32, ctx: & Canva
         console::log_1(&format!("Error: Canvas undefined during crop - reverting to original image").into());
         return img.copy();
     }
-    let mut img_out = Image::new(vec![255; (new_width*new_height*4) as usize], new_width as i32, new_height as i32);
+    let mut img_out = Image::new_with_padding(vec![255; (new_width*new_height*4) as usize], new_width as i32, new_height as i32, img.pad_fn);
 
     for i in 0..new_width {
         for j in 0..new_height {
