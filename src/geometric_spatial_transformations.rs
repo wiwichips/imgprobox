@@ -69,8 +69,6 @@ pub fn flip_vertical(img: &mut Image) {
     }
 }
 
-// cropping
-
 pub fn rotate(img: &Image, theta: f64, interpolation: InterpolationFn) -> Image {
     let theta_rad = theta.to_radians();
     let sin_theta = theta_rad.sin();
