@@ -65,7 +65,10 @@ impl Image {
         &self.array
     }
 
-    // Make a deep copy of the image
+    /// Make a deep copy of the image
+    /// TODO: use https://doc.rust-lang.org/std/clone/trait.Clone.html
+    /// and https://doc.rust-lang.org/std/ops/trait.Index.html to simplify
+    /// copy code.
     pub fn copy(&self) -> Image {
         let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width, pad_fn: self.pad_fn }; 
         for i in 0usize..self.array.len() {
