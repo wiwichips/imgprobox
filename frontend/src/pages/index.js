@@ -349,6 +349,7 @@ function App() {
           </div>
         </div>
       </div>
+      <link rel="shortcut icon" type="image/x-icon" href="https://wiwichips.github.io/imgprobox/favicon.ico"></link>
     </div>
   );
 }
