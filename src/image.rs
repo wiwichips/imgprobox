@@ -71,9 +71,6 @@ impl Image {
     }
 
     /// Make a deep copy of the image
-    /// TODO: use https://doc.rust-lang.org/std/clone/trait.Clone.html
-    /// and https://doc.rust-lang.org/std/ops/trait.Index.html to simplify
-    /// copy code.
     pub fn copy(&self) -> Image {
         self.clone()
     }
