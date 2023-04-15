@@ -1,11 +1,16 @@
 use crate::padding::*;
 
 // Image Struct
+#[derive(Clone)]
 pub struct Image {
-    array: Vec<u8>, // canvas represented as (1d array of pixels)
-    pub width: i32, // number of columns
-    pub height: i32, // number of rows 
-    pub pad_fn: fn(&Image, i32, i32) -> (u8,u8,u8), // function used for padding
+    /// canvas represented as (1d array of pixels)
+    array: Vec<u8>,
+    /// number of columns
+    pub width: i32,
+    /// number of rows
+    pub height: i32,
+    /// function used for padding
+    pub pad_fn: fn(&Image, i32, i32) -> (u8,u8,u8),
 }
 
 // Image Methods
@@ -70,10 +75,6 @@ impl Image {
     /// and https://doc.rust-lang.org/std/ops/trait.Index.html to simplify
     /// copy code.
     pub fn copy(&self) -> Image {
-        let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width, pad_fn: self.pad_fn }; 
-        for i in 0usize..self.array.len() {
-            img.array[i] = self.array[i];
-        }
-        return img;
+        self.clone()
     }
 }
