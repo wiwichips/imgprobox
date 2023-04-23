@@ -65,7 +65,19 @@ impl Image {
         &self.array
     }
 
-    // Make a deep copy of the image
+    /// Set the pixel's transparency
+    pub fn set_pixel_tranparency(&mut self, x: i32, y: i32, alpha: u8) {
+        let index = self.get_pixel_index(x,y);
+        self.array[index + 3] = alpha;
+    }
+
+    /// Get the pixel's transparency
+    pub fn get_pixel_tranparency(&self, x: i32, y: i32) -> u8 {
+        let index = self.get_pixel_index(x,y);
+        self.array[index + 3]
+    }
+
+    /// Make a deep copy of the image
     pub fn copy(&self) -> Image {
         let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width, pad_fn: self.pad_fn }; 
         for i in 0usize..self.array.len() {
