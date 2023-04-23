@@ -77,6 +77,18 @@ impl Image {
         self.array[index + 3]
     }
 
+    /// Chroma Key
+    pub fn chroma_key(&mut self, (r,g,b): (u8,u8,u8), threshold: u8) {
+        for i in (3usize..self.array.len()).step_by(4) {
+            let pixel = (self.array[i - 3], self.array[i - 2], self.array[i - 1]);
+            if (pixel.0 as i32 - r as i32).abs() < threshold as i32 &&
+                (pixel.1 as i32 - g as i32).abs() < threshold as i32 &&
+                (pixel.2 as i32 - b as i32).abs() < threshold as i32 {
+                self.array[i] = 0;
+            } 
+        }
+    }
+
     /// Make a deep copy of the image
     pub fn copy(&self) -> Image {
         let mut img = Image { array: vec![255; self.array.len()], height: self.height, width: self.width, pad_fn: self.pad_fn }; 
